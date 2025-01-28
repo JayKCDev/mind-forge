@@ -37,13 +37,17 @@ const PaymentPageContent = () => {
 			? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
 			: undefined;
 
-		const result = await stripe.confirmPayment({
-			elements,
-			confirmParams: {
-				return_url: `${baseUrl}/checkout?step=3&id=${courseId}`,
-			},
-			redirect: "if_required",
-		});
+			console.log("payment.baseUrl ", baseUrl);
+
+			const result = await stripe.confirmPayment({
+				elements,
+				confirmParams: {
+					return_url: `${baseUrl}/checkout?step=3&id=${courseId}`,
+				},
+				redirect: "if_required",
+			});
+
+			console.log("payment.result ", result);
 
 		if (result.paymentIntent?.status === "succeeded") {
 			const transactionData: Partial<Transaction> = {
