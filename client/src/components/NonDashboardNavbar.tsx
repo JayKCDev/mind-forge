@@ -7,10 +7,10 @@ import Link from "next/link";
 import React from "react";
 
 const NonDashboardNavbar = () => {
-  const { user } = useUser();
-  const userRole = user?.publicMetadata?.userType as "student" | "teacher";
+	const { user } = useUser();
+	const userRole = user?.publicMetadata?.userType as "student" | "teacher";
 
-  return (
+	return (
 		<nav className="nondashboard-navbar">
 			<div className="nondashboard-navbar__container">
 				<div className="nondashboard-navbar__search">
