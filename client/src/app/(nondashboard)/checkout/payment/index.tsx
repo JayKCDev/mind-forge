@@ -38,8 +38,6 @@ const PaymentPageContent = () => {
 			? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
 			: undefined;
 
-		console.log("payment.baseUrl ", baseUrl);
-
 		const result = await stripe.confirmPayment({
 			elements,
 			confirmParams: {
@@ -47,8 +45,6 @@ const PaymentPageContent = () => {
 			},
 			redirect: "if_required",
 		});
-
-		console.log("payment.result ", result);
 
 		if (result.paymentIntent?.status === "succeeded") {
 			const transactionData: Partial<Transaction> = {
