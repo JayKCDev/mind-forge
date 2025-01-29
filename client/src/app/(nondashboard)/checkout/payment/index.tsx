@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import StripeProvider from "./StripeProvider";
 import {
 	PaymentElement,
@@ -63,6 +63,22 @@ const PaymentPageContent = () => {
 		await signOut();
 		navigateToStep(1);
 	};
+
+	useEffect(() => {
+		// Show the toast and store its ID
+		const cardInfoToast = toast.info(
+			"For dummy transaction, use below credentials:\nCard Number: 4242 4242 4242 4242\nExpiry: 03/33\n CVC: 333",
+			{
+				duration: Infinity,
+				style: { whiteSpace: "pre-line" }, // Enables `\n` to work
+			}
+		);
+
+		// Cleanup function to remove the toast when component unmounts
+		return () => {
+			toast.dismiss(cardInfoToast);
+		};
+	}, []);
 
 	if (!course) return null;
 
