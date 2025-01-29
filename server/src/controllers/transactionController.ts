@@ -54,6 +54,7 @@ export const createStripePaymentIntent = async (
 				enabled: true,
 				allow_redirects: "never",
 			},
+			description: "Course purchase",
 		});
 
 		res.json({
