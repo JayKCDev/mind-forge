@@ -31,8 +31,17 @@ const SignUpComponent = () => {
 
 	useEffect(() => {
 		// Show the toast and store its ID
-		const toastId = toast.info(
+		const teacherToast = toast.info(
 			"To login as Teacher, use below credentials:\n\nEmail: teacher@gmail.com\nPassword: mind2025forge",
+			{
+				duration: Infinity,
+				style: { whiteSpace: "pre-line" }, // Enables `\n` to work
+			}
+		);
+
+		// Show the toast and store its ID
+		const studentToast = toast.info(
+			"To login as Student, use below credentials:\n\nEmail: student@gmail.com\nPassword: mind2025forge",
 			{
 				duration: Infinity,
 				style: { whiteSpace: "pre-line" }, // Enables `\n` to work
@@ -41,7 +50,8 @@ const SignUpComponent = () => {
 
 		// Cleanup function to remove the toast when component unmounts
 		return () => {
-			toast.dismiss(toastId);
+			toast.dismiss(teacherToast);
+			toast.dismiss(studentToast);
 		};
 	}, []);
 
