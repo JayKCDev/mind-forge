@@ -58,9 +58,9 @@ const Courses = () => {
     if (!user) return;
 
     const result = await createCourse({
-      teacherId: user.id,
-      teacherName: user.fullName || "Unknown Teacher",
-    }).unwrap();
+			teacherId: user.id,
+			teacherName: user.fullName || "Larry Page",
+		}).unwrap();
     router.push(`/teacher/courses/${result.courseId}`, {
       scroll: false,
     });

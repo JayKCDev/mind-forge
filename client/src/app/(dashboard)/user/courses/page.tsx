@@ -14,15 +14,15 @@ const Courses = () => {
   const { user, isLoaded } = useUser();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-
+	
   const {
-    data: courses,
-    isLoading,
-    isError,
-  } = useGetUserEnrolledCoursesQuery(user?.id ?? "", {
-    skip: !isLoaded || !user,
-  });
-
+		data: courses,
+		isLoading,
+		isError,
+	} = useGetUserEnrolledCoursesQuery(user?.id ?? "", {
+		skip: !isLoaded || !user,
+	});
+	
   const filteredCourses = useMemo(() => {
     if (!courses) return [];
 

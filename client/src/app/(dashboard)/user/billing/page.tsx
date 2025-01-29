@@ -39,6 +39,8 @@ const UserBilling = () => {
   if (!isLoaded) return <Loading />;
   if (!user) return <div>Please sign in to view your billing information.</div>;
 
+	console.log(filteredData);
+
   return (
     <div className="billing">
       <div className="billing__container">
