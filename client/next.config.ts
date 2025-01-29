@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
 		remotePatterns: [
 			{
 				protocol: "https",
-				hostname: "images.pexels.com",
+				hostname: "mind-forge-bucket.s3.ap-south-1.amazonaws.com",
 				port: "",
 				pathname: "/**",
 			},
