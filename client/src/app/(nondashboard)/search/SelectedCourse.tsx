@@ -7,18 +7,16 @@ import { useUser } from "@clerk/nextjs";
 
 const SelectedCourse = ({ course, handleEnrollNow }: SelectedCourseProps) => {
 	let isCurrentUserEnrolled: boolean = false;
-	const { user, isLoaded } = useUser();
-	const enrolledStudents = course?.enrollments.map(
-		(enrollment) => enrollment.userId
-	);
-	console.log(enrolledStudents);
-	console.log(course);
-	console.log(user);
+	const { user } = useUser();
 
-	if (user && enrolledStudents?.length && enrolledStudents?.includes(user.id))
-		isCurrentUserEnrolled = true;
+	if (course?.enrollments?.length) {
+		const enrolledStudents = course?.enrollments.map(
+			(enrollment) => enrollment.userId
+		);
 
-	console.log(isCurrentUserEnrolled);
+		if (user && enrolledStudents?.length && enrolledStudents?.includes(user.id))
+			isCurrentUserEnrolled = true;
+	}
 
 	return (
 		<div className="selected-course">
@@ -42,9 +40,11 @@ const SelectedCourse = ({ course, handleEnrollNow }: SelectedCourseProps) => {
 
 				<div className="selected-course__footer">
 					{isCurrentUserEnrolled ? (
-						<Link href="user/courses" scroll={false}>
-							Go to Courses
-						</Link>
+						<div className="completion__action">
+							<Link href="user/courses" scroll={false}>
+								Go to Courses
+							</Link>
+						</div>
 					) : (
 						<>
 							<span className="selected-course__price">
