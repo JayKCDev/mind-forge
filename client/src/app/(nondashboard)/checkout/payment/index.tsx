@@ -2,6 +2,7 @@ import React from "react";
 import StripeProvider from "./StripeProvider";
 import {
 	PaymentElement,
+	AddressElement,
 	useElements,
 	useStripe,
 } from "@stripe/react-stripe-js";
@@ -37,17 +38,17 @@ const PaymentPageContent = () => {
 			? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
 			: undefined;
 
-			console.log("payment.baseUrl ", baseUrl);
+		console.log("payment.baseUrl ", baseUrl);
 
-			const result = await stripe.confirmPayment({
-				elements,
-				confirmParams: {
-					return_url: `${baseUrl}/checkout?step=3&id=${courseId}`,
-				},
-				redirect: "if_required",
-			});
+		const result = await stripe.confirmPayment({
+			elements,
+			confirmParams: {
+				return_url: `${baseUrl}/checkout?step=3&id=${courseId}`,
+			},
+			redirect: "if_required",
+		});
 
-			console.log("payment.result ", result);
+		console.log("payment.result ", result);
 
 		if (result.paymentIntent?.status === "succeeded") {
 			const transactionData: Partial<Transaction> = {
@@ -97,6 +98,9 @@ const PaymentPageContent = () => {
 									<div className="payment__card-header">
 										<CreditCard size={24} />
 										<span>Credit/Debit Card</span>
+									</div>
+									<div className="payment__card-element">
+										<AddressElement options={{ mode: "billing" }} />
 									</div>
 									<div className="payment__card-element">
 										<PaymentElement />
