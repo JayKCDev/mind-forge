@@ -2,16 +2,16 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
 	/* config options here */
-	// images: {
-	//   remotePatterns: [
-	//     {
-	//       protocol: "https",
-	//       hostname: "images.pexels.com" || "localhost",
-	//       port: "",
-	//       pathname: "/**",
-	//     },
-	//   ],
-	// },
+	images: {
+		remotePatterns: [
+			{
+				protocol: "https",
+				hostname: "mind-forge-bucket.s3.ap-south-1.amazonaws.com",
+				port: "",
+				pathname: "/**",
+			},
+		],
+	},
 	eslint: {
 		ignoreDuringBuilds: true,
 	},
