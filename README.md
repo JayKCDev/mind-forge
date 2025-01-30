@@ -16,6 +16,7 @@ Frontend
 + User authentication is managed using [Clerk](https://clerk.com/) authentication
 + Checkout flow is integrated using Stripe
 + UI is built using framer-motion, tailwind CSS and shadcn-ui library to give modern and elegant dark theme design
++ Frontend is deployed on Vercel
 
 ### Features
 Frontend
@@ -52,7 +53,7 @@ NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=YOUR-CLERK-PUBLISHABLE-KEY
 CLERK_SECRET_KEY=YOUR-CLERK-SECRET-KEY
 ```
 
-**Commands for backend**
+**Commands for backend**\
 Command to connect to local DynamoDB instance using Windows CMD, please enusre you JAVA installed on your machine (prerequisite)
 ```
 java "-Djava.library.path=ADD_PATH_TO/DynamoDBLocal_lib" -jar "ADD_PATH_TO/DynamoDBLocal.jar" -sharedDb -dbPath "ADD_PATH_TO_SERVER_DIRECTORY_OF_THIS_PROJECT"
@@ -66,9 +67,9 @@ docker build --provenance=false -t your-image-name .
 `--provenance=false` flag was required to fix image build errors on AWS side referencing the solution from [this](https://github.com/docker/buildx/issues/1509#issuecomment-1378538197) post
 
 **Test credentials to login as Teacher**
-> Email: teacher@gmail.com
+> Email: teacher@gmail.com\
 > Password: mind2025forge
 
 **Test credentials to login as Student / User**
-> Email: student@gmail.com
+> Email: student@gmail.com\
 > Password: mind2025forge
