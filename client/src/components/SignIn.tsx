@@ -29,6 +29,7 @@ const SignInComponent = () => {
 	};
 
 	useEffect(() => {
+		if (user) return;
 		// Show the toast and store its ID
 		const teacherToast = toast.info(
 			"To login as Teacher, use below credentials:\n\nEmail: teacher@gmail.com\nPassword: mind2025forge",

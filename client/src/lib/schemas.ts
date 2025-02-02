@@ -2,11 +2,12 @@ import * as z from "zod";
 
 // Course Editor Schemas
 export const courseSchema = z.object({
-  courseTitle: z.string().min(1, "Title is required"),
-  courseDescription: z.string().min(1, "Description is required"),
-  courseCategory: z.string().min(1, "Category is required"),
-  coursePrice: z.string(),
-  courseStatus: z.boolean(),
+	courseTitle: z.string().min(1, "Title is required"),
+	teacherName: z.string().min(1, "Teacher Name is required"),
+	courseDescription: z.string().min(1, "Description is required"),
+	courseCategory: z.string().min(1, "Category is required"),
+	coursePrice: z.string(),
+	courseStatus: z.boolean(),
 });
 
 export type CourseFormData = z.infer<typeof courseSchema>;

@@ -293,6 +293,7 @@ export const createCourseFormData = (
   sections: Section[]
 ): FormData => {
   const formData = new FormData();
+  formData.append("teacherName", data.teacherName);
   formData.append("title", data.courseTitle);
   formData.append("description", data.courseDescription);
   formData.append("category", data.courseCategory);

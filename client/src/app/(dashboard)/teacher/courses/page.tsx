@@ -18,56 +18,56 @@ const Courses = () => {
   const router = useRouter();
   const { user } = useUser();
   const {
-    data: courses,
-    isLoading,
-    isError,
-  } = useGetCoursesQuery({ category: "all" });
+		data: courses,
+		isLoading,
+		isError,
+	} = useGetCoursesQuery({ category: "all", teacherId: user.id });
 
-  const [createCourse] = useCreateCourseMutation();
-  const [deleteCourse] = useDeleteCourseMutation();
+	const [createCourse] = useCreateCourseMutation();
+	const [deleteCourse] = useDeleteCourseMutation();
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+	const [searchTerm, setSearchTerm] = useState("");
+	const [selectedCategory, setSelectedCategory] = useState("all");
 
-  const filteredCourses = useMemo(() => {
-    if (!courses) return [];
+	const filteredCourses = useMemo(() => {
+		if (!courses) return [];
 
-    return courses.filter((course) => {
-      const matchesSearch = course.title
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      const matchesCategory =
-        selectedCategory === "all" || course.category === selectedCategory;
-      return matchesSearch && matchesCategory;
-    });
-  }, [courses, searchTerm, selectedCategory]);
+		return courses.filter((course) => {
+			const matchesSearch = course.title
+				.toLowerCase()
+				.includes(searchTerm.toLowerCase());
+			const matchesCategory =
+				selectedCategory === "all" || course.category === selectedCategory;
+			return matchesSearch && matchesCategory;
+		});
+	}, [courses, searchTerm, selectedCategory]);
 
-  const handleEdit = (course: Course) => {
-    router.push(`/teacher/courses/${course.courseId}`, {
-      scroll: false,
-    });
-  };
+	const handleEdit = (course: Course) => {
+		router.push(`/teacher/courses/${course.courseId}`, {
+			scroll: false,
+		});
+	};
 
-  const handleDelete = async (course: Course) => {
-    if (window.confirm("Are you sure you want to delete this course?")) {
-      await deleteCourse(course.courseId).unwrap();
-    }
-  };
+	const handleDelete = async (course: Course) => {
+		if (window.confirm("Are you sure you want to delete this course?")) {
+			await deleteCourse(course.courseId).unwrap();
+		}
+	};
 
-  const handleCreateCourse = async () => {
-    if (!user) return;
+	const handleCreateCourse = async () => {
+		if (!user) return;
 
-    const result = await createCourse({
+		const result = await createCourse({
 			teacherId: user.id,
 			teacherName: user.fullName || "Larry Page",
 		}).unwrap();
-    router.push(`/teacher/courses/${result.courseId}`, {
-      scroll: false,
-    });
-  };
+		router.push(`/teacher/courses/${result.courseId}`, {
+			scroll: false,
+		});
+	};
 
-  if (isLoading) return <Loading />;
-  if (isError || !courses) return <div>Error loading courses.</div>;
+	if (isLoading) return <Loading />;
+	if (isError || !courses) return <div>Error loading courses.</div>;
 
   return (
     <div className="teacher-courses">
