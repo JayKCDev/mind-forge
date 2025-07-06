@@ -70,7 +70,7 @@ const ForgotPasswordForm = ({ onSubmit, isLoading = false }: ForgotPasswordFormP
                 If an account with that email exists, you'll receive a password reset link shortly.
               </p>
               <Link
-                href="/signin"
+                href="/new-signin"
                 className="inline-flex items-center text-primary-700 hover:text-primary-600 transition-colors"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
@@ -134,7 +134,7 @@ const ForgotPasswordForm = ({ onSubmit, isLoading = false }: ForgotPasswordFormP
 
           <div className="text-center">
             <Link
-              href="/signin"
+              href="/new-signin"
               className="inline-flex items-center text-primary-700 hover:text-primary-600 transition-colors text-sm"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />

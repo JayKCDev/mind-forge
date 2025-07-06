@@ -200,7 +200,7 @@ const LoginForm = ({ onSubmit, isLoading = false, redirectUrl }: LoginFormProps)
           <div className="text-center text-sm text-customgreys-dirtyGrey">
             Don't have an account?{" "}
             <Link
-              href="/signup"
+              href="/new-signup"
               className="text-primary-700 hover:text-primary-600 font-medium transition-colors"
             >
               Sign up

@@ -383,7 +383,7 @@ const SignupForm = ({ onSubmit, isLoading = false, redirectUrl }: SignupFormProp
           <div className="text-center text-sm text-customgreys-dirtyGrey">
             Already have an account?{" "}
             <Link
-              href="/signin"
+              href="/new-signin"
               className="text-primary-700 hover:text-primary-600 font-medium transition-colors"
             >
               Sign in
