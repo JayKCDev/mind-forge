@@ -341,3 +341,28 @@ export const getUser = async (req: Request, res: Response): Promise<void> => {
 		res.status(500).json({ message: "Error retrieving user", error });
 	}
 };
+
+export const logout = async (req: Request, res: Response): Promise<void> => {
+	try {
+		const userId = (req as any).user?.userId;
+
+		if (!userId) {
+			res.status(401).json({
+				message: "User not authenticated",
+			});
+			return;
+		}
+
+		// Simple logout - just acknowledge the request
+		// Client will handle removing the token from storage
+		res.status(200).json({
+			message: "User logged out successfully",
+		});
+	} catch (error) {
+		console.error("Logout error:", error);
+		res.status(500).json({
+			message: "Internal server error during logout",
+			error: process.env.NODE_ENV === "development" ? error : undefined,
+		});
+	}
+};

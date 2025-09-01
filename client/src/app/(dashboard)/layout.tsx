@@ -9,18 +9,13 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import ChaptersSidebar from "./user/courses/[courseId]/ChaptersSidebar";
 
-export default function DashboardLayout({
-	children,
-}: {
-	children: React.ReactNode;
-}) {
-	console.log("DashboardLayout");
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
 	const pathname = usePathname();
 	const [courseId, setCourseId] = useState<string | null>(null);
 	const { user, isAuthenticated, isLoading } = useAuth();
 
 	const isCoursePage = /^\/user\/courses\/[^\/]+(?:\/chapters\/[^\/]+)?$/.test(
-		pathname
+		pathname,
 	);
 
 	useEffect(() => {
@@ -45,7 +40,7 @@ export default function DashboardLayout({
 					<div
 						className={cn(
 							"dashboard__main",
-							isCoursePage && "dashboard__main--not-course"
+							isCoursePage && "dashboard__main--not-course",
 						)}
 						style={{ height: "100vh" }}
 					>

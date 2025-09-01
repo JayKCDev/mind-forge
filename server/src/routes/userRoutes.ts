@@ -6,6 +6,7 @@ import {
 	updateProfile,
 	updateUser,
 	getUser,
+	logout,
 } from "../controllers/userController";
 import { authenticateToken, requireOwnership } from "../middleware/auth";
 
@@ -18,6 +19,7 @@ router.post("/signin", signin);
 // Protected routes (authentication required)
 router.get("/profile", authenticateToken, getProfile);
 router.put("/profile", authenticateToken, updateProfile);
+router.post("/logout", authenticateToken, logout);
 
 // User management routes (replacing Clerk user routes)
 router.get("/:userId", authenticateToken, requireOwnership, getUser);

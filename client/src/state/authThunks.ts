@@ -16,16 +16,16 @@ export const loginUser = createAsyncThunk(
 			dispatch(setLoading(true));
 			dispatch(clearError());
 
-			const response = await fetch(
-				`${
-					process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000"
-				}/auth/signin`,
-				{
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify(credentials),
-				}
-			);
+			// Construct the signin URL
+			const baseUrl =
+				process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+			const signinUrl = `${baseUrl}/auth/signin`;
+
+			const response = await fetch(signinUrl, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(credentials),
+			});
 
 			const result = await response.json();
 
@@ -38,7 +38,7 @@ export const loginUser = createAsyncThunk(
 					setCredentials({
 						user: result.data.user,
 						token: result.data.token,
-					})
+					}),
 				);
 
 				return result.data;
@@ -53,7 +53,7 @@ export const loginUser = createAsyncThunk(
 		} finally {
 			dispatch(setLoading(false));
 		}
-	}
+	},
 );
 
 // Signup user
@@ -67,22 +67,22 @@ export const signupUser = createAsyncThunk(
 			password: string;
 			userType: "student" | "teacher";
 		},
-		{ dispatch }
+		{ dispatch },
 	) => {
 		try {
 			dispatch(setLoading(true));
 			dispatch(clearError());
 
-			const response = await fetch(
-				`${
-					process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000"
-				}/auth/signup`,
-				{
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify(userData),
-				}
-			);
+			// Construct the signup URL
+			const baseUrl =
+				process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+			const signupUrl = `${baseUrl}/auth/signup`;
+
+			const response = await fetch(signupUrl, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(userData),
+			});
 
 			const result = await response.json();
 
@@ -95,7 +95,7 @@ export const signupUser = createAsyncThunk(
 					setCredentials({
 						user: result.data.user,
 						token: result.data.token,
-					})
+					}),
 				);
 
 				return result.data;
@@ -110,16 +110,50 @@ export const signupUser = createAsyncThunk(
 		} finally {
 			dispatch(setLoading(false));
 		}
-	}
+	},
 );
 
 // Logout user
 export const logoutUser = createAsyncThunk(
 	"auth/logout",
-	async (_, { dispatch }) => {
-		localStorage.removeItem("authToken");
-		dispatch(logout());
-	}
+	async (_, { dispatch, getState }) => {
+		try {
+			const state = getState() as RootState;
+			const token = state.auth.token || localStorage.getItem("authToken");
+
+			// Call server logout endpoint if we have a token
+			if (token) {
+				// Construct the logout URL
+				const baseUrl =
+					process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+				const logoutUrl = `${baseUrl}/auth/logout`;
+
+				const response = await fetch(logoutUrl, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				});
+
+				// Even if server call fails, we still logout locally
+				if (!response.ok) {
+					console.warn(
+						"Server logout failed, but proceeding with local logout",
+					);
+				}
+			}
+
+			// Clear local storage and Redux state
+			localStorage.removeItem("authToken");
+			dispatch(logout());
+		} catch (error) {
+			// Even if there's an error, we still logout locally
+			console.error("Logout error:", error);
+			localStorage.removeItem("authToken");
+			dispatch(logout());
+		}
+	},
 );
 
 // Verify token on app load
@@ -137,14 +171,14 @@ export const verifyToken = createAsyncThunk(
 		try {
 			dispatch(setLoading(true));
 
-			const response = await fetch(
-				`${
-					process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000"
-				}/auth/profile`,
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			);
+			// Construct the profile URL
+			const baseUrl =
+				process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+			const profileUrl = `${baseUrl}/auth/profile`;
+
+			const response = await fetch(profileUrl, {
+				headers: { Authorization: `Bearer ${token}` },
+			});
 
 			if (response.ok) {
 				const result = await response.json();
@@ -152,7 +186,7 @@ export const verifyToken = createAsyncThunk(
 					setCredentials({
 						user: result.data.user,
 						token: token,
-					})
+					}),
 				);
 			} else {
 				// Token invalid, logout
@@ -165,5 +199,5 @@ export const verifyToken = createAsyncThunk(
 		} finally {
 			dispatch(setLoading(false));
 		}
-	}
+	},
 );
