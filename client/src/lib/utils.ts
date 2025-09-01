@@ -8,6 +8,35 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/**
+ * Constructs a proper base URL for Stripe return URLs
+ * Handles cases where environment variables may or may not include protocols
+ */
+export function getBaseUrl(): string {
+	// Check for environment variables first
+	const localUrl = process.env.NEXT_PUBLIC_LOCAL_URL;
+	const vercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
+	
+	let baseUrl = localUrl || vercelUrl;
+	
+	if (!baseUrl) {
+		// Fallback to window.location for development
+		if (typeof window !== 'undefined') {
+			return window.location.origin;
+		}
+		// Server-side fallback
+		return 'http://localhost:3000';
+	}
+	
+	// Ensure the URL has a protocol
+	if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
+		// Add protocol based on environment
+		baseUrl = localUrl ? `http://${baseUrl}` : `https://${baseUrl}`;
+	}
+	
+	return baseUrl;
+}
+
 // Convert cents to formatted currency string (e.g., 4999 -> "$49.99")
 export function formatPrice(cents: number | undefined): string {
   return new Intl.NumberFormat("en-US", {

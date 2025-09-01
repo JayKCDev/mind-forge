@@ -1,10 +1,10 @@
 # Mind Forge
 
-## Mind Forge is an e-Learning Platform built on Next.Js(frontend), Node.Js (backend), AWS DynamoDB, Clerk Authentication deployed on AWS
+## Mind Forge is an e-Learning Platform built on Next.Js(frontend), Node.Js (backend), AWS DynamoDB, Docker, AWS EKS, deployed on AWS
 
 ### Tech Stack
 Backend
-+ User authentication is managed using [Clerk](https://clerk.com/) authentication
++ User authentication is managed using **JWT (JSON Web Tokens)** with custom authentication system
 + Backend is built using Express.js, AWS sdk, multer (to handle file uploads), Docker and many more production grade dependencies.
 + Backend image is built using Docker which is then uploaded on AWS Elastic Container Registry and deployed using AWS Lambda.
 + AWS API Gateway is working as proxy for route handlers to let express routing take care of different endpoints exposed from the backend
@@ -13,7 +13,7 @@ Backend
 + Stripe is integrate for smooth checkout flow and creating payment intents for course purchases
 
 Frontend
-+ User authentication is managed using [Clerk](https://clerk.com/) authentication
++ User authentication is managed using **JWT (JSON Web Tokens)** with custom authentication system
 + Checkout flow is integrated using Stripe
 + UI is built using framer-motion, tailwind CSS and shadcn-ui library to give modern and elegant dark theme design
 + Frontend is deployed on Vercel
@@ -38,8 +38,9 @@ CLOUDFRONT_DOMAIN=YOUR-CLOUDFRONT-DOMAIN
 
 STRIPE_SECRET_KEY=YOUR-STRIPE-SECRET-KEY
 
-CLERK_PUBLISHABLE_KEY=YOUR-CLERK-PUBLISHABLE-KEY
-CLERK_SECRET_KEY=YOUR-CLERK-SECRET-KEY
+# JWT Configuration
+JWT_SECRET=your-super-secret-jwt-key-change-in-production-minimum-32-characters
+JWT_EXPIRES_IN=7d
 ```
 
 **Required .env Variables for client**
@@ -48,9 +49,6 @@ NEXT_PUBLIC_API_BASE_URL=BACKEND_URL_GOES_HERE
 NEXT_PUBLIC_LOCAL_URL=FRONTEND_URL_GOES_HERE
 
 NEXT_PUBLIC_STRIPE_PUBLIC_KEY=YOUR-STRIPE-PUBLIC-KEY
-
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=YOUR-CLERK-PUBLISHABLE-KEY
-CLERK_SECRET_KEY=YOUR-CLERK-SECRET-KEY
 ```
 
 **Commands for backend**\

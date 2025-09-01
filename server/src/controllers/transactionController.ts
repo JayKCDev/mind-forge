@@ -20,11 +20,18 @@ export const listTransactions = async (
 	res: Response
 ): Promise<void> => {
 	const { userId } = req.query;
+	const authenticatedUserId = req.user?.userId;
+
+	// Users can only view their own transactions
+	if (!authenticatedUserId || authenticatedUserId !== userId) {
+		res.status(403).json({
+			message: "Access denied. You can only view your own transactions.",
+		});
+		return;
+	}
 
 	try {
-		const transactions = userId
-			? await Transaction.query("userId").eq(userId).exec()
-			: await Transaction.scan().exec();
+		const transactions = await Transaction.query("userId").eq(userId).exec();
 
 		res.json({
 			message: "Transactions retrieved successfully",
@@ -64,6 +71,7 @@ export const createStripePaymentIntent = async (
 			},
 		});
 	} catch (error) {
+		console.error(error);
 		res
 			.status(500)
 			.json({ message: "Error creating stripe payment intent", error });
@@ -75,6 +83,15 @@ export const createTransaction = async (
 	res: Response
 ): Promise<void> => {
 	const { userId, courseId, transactionId, amount, paymentProvider } = req.body;
+	const authenticatedUserId = req.user?.userId;
+
+	// Users can only create transactions for themselves
+	if (!authenticatedUserId || authenticatedUserId !== userId) {
+		res.status(403).json({
+			message: "Access denied. You can only create transactions for yourself.",
+		});
+		return;
+	}
 
 	try {
 		// 1. get course info
@@ -126,6 +143,7 @@ export const createTransaction = async (
 			},
 		});
 	} catch (error) {
+		console.error(error);
 		res
 			.status(500)
 			.json({ message: "Error creating transaction and enrollment", error });

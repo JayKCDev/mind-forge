@@ -10,6 +10,7 @@ import pluralize from "pluralize";
 import Transaction from "../models/transactionModel";
 import Course from "../models/courseModel";
 import UserCourseProgress from "../models/userCourseProgressModel";
+import User from "../models/userModel";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -19,55 +20,55 @@ let client: DynamoDBClient;
 const isProduction = process.env.NODE_ENV === "production";
 
 if (!isProduction) {
-  dynamoose.aws.ddb.local();
-  client = new DynamoDBClient({
-    endpoint: "http://localhost:8000",
-    region: "us-east-2",
-    credentials: {
-      accessKeyId: "dummyKey123",
-      secretAccessKey: "dummyKey123",
-    },
-  });
+	dynamoose.aws.ddb.local();
+	client = new DynamoDBClient({
+		endpoint: "http://localhost:8000",
+		region: "us-east-2",
+		credentials: {
+			accessKeyId: "dummyKey123",
+			secretAccessKey: "dummyKey123",
+		},
+	});
 } else {
-  client = new DynamoDBClient({
-    region: process.env.AWS_REGION || "us-east-2",
-  });
+	client = new DynamoDBClient({
+		region: process.env.AWS_REGION || "us-east-2",
+	});
 }
 
 /* DynamoDB Suppress Tag Warnings */
 const originalWarn = console.warn.bind(console);
 console.warn = (message, ...args) => {
-  if (
-    !message.includes("Tagging is not currently supported in DynamoDB Local")
-  ) {
-    originalWarn(message, ...args);
-  }
+	if (
+		!message.includes("Tagging is not currently supported in DynamoDB Local")
+	) {
+		originalWarn(message, ...args);
+	}
 };
 
 async function createTables() {
-  const models = [Transaction, UserCourseProgress, Course];
+	const models = [Transaction, UserCourseProgress, Course, User];
 
-  for (const model of models) {
-    const tableName = model.name;
-    const table = new dynamoose.Table(tableName, [model], {
-      create: true,
-      update: true,
-      waitForActive: true,
-      throughput: { read: 5, write: 5 },
-    });
+	for (const model of models) {
+		const tableName = model.name;
+		const table = new dynamoose.Table(tableName, [model], {
+			create: true,
+			update: true,
+			waitForActive: true,
+			throughput: { read: 5, write: 5 },
+		});
 
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      await table.initialize();
-      console.log(`Table created and initialized: ${tableName}`);
-    } catch (error: any) {
-      console.error(
-        `Error creating table ${tableName}:`,
-        error.message,
-        error.stack
-      );
-    }
-  }
+		try {
+			await new Promise((resolve) => setTimeout(resolve, 2000));
+			await table.initialize();
+			console.log(`Table created and initialized: ${tableName}`);
+		} catch (error: any) {
+			console.error(
+				`Error creating table ${tableName}:`,
+				error.message,
+				error.stack
+			);
+		}
+	}
 }
 
 async function seedData(tableName: string, filePath: string) {

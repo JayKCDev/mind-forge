@@ -1,14 +1,23 @@
 "use client";
 
-import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
-import { dark } from "@clerk/themes";
-import { Bell, BookOpen } from "lucide-react";
+import { Bell, BookOpen, User, LogOut } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const NonDashboardNavbar = () => {
-	const { user } = useUser();
-	const userRole = user?.publicMetadata?.userType as "student" | "teacher";
+	const { user, isAuthenticated, logout } = useAuth();
+	const userRole = user?.userType as "student" | "teacher";
 
 	return (
 		<nav className="nondashboard-navbar">
@@ -40,38 +49,81 @@ const NonDashboardNavbar = () => {
 						<Bell className="nondashboard-navbar__notification-icon" />
 					</button>
 
-					<SignedIn>
-						<UserButton
-							appearance={{
-								baseTheme: dark,
-								elements: {
-									userButtonOuterIdentifier: "text-customgreys-dirtyGrey",
-									userButtonBox: "scale-90 sm:scale-100",
-								},
-							}}
-							showName={true}
-							userProfileMode="navigation"
-							userProfileUrl={
-								userRole === "teacher" ? "/teacher/profile" : "/user/profile"
-							}
-						/>
-					</SignedIn>
-					<SignedOut>
-						<Link
-							href="/signin"
-							className="nondashboard-navbar__auth-button--login"
-							scroll={false}
-						>
-							Log in
-						</Link>
-						<Link
-							href="/signup"
-							className="nondashboard-navbar__auth-button--signup"
-							scroll={false}
-						>
-							Sign up
-						</Link>
-					</SignedOut>
+					{isAuthenticated && user ? (
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button
+									variant="ghost"
+									className="relative h-8 w-8 rounded-full"
+								>
+									<Avatar className="h-8 w-8">
+										<AvatarImage src="" alt={user?.firstName || "User"} />
+										<AvatarFallback className="bg-customgreys-darkGrey text-white-100">
+											{user?.firstName?.[0] || "U"}
+										</AvatarFallback>
+									</Avatar>
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent
+								className="w-56 bg-customgreys-primarybg border border-customgreys-darkGrey shadow-lg"
+								align="end"
+								forceMount
+							>
+								<DropdownMenuLabel className="font-normal text-white-100">
+									<div className="flex flex-col space-y-1">
+										<p className="text-sm font-medium leading-none text-white-100">
+											{user?.firstName} {user?.lastName}
+										</p>
+										<p className="text-xs leading-none text-customgreys-dirtyGrey">
+											{user?.email}
+										</p>
+									</div>
+								</DropdownMenuLabel>
+								<DropdownMenuSeparator />
+								<DropdownMenuItem
+									asChild
+									className="text-white-100 hover:bg-customgreys-secondarybg focus:bg-customgreys-secondarybg"
+								>
+									<Link
+										href={
+											userRole === "teacher"
+												? "/teacher/profile"
+												: "/user/profile"
+										}
+										className="cursor-pointer"
+									>
+										<User className="mr-2 h-4 w-4" />
+										<span>Profile</span>
+									</Link>
+								</DropdownMenuItem>
+								<DropdownMenuSeparator className="bg-customgreys-darkGrey" />
+								<DropdownMenuItem
+									onClick={logout}
+									className="cursor-pointer text-white-100 hover:bg-customgreys-secondarybg focus:bg-customgreys-secondarybg"
+								>
+									<LogOut className="mr-2 h-4 w-4" />
+									<span>Log out</span>
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+					) : (
+						<>
+							<Link
+								href="/signin"
+								className="nondashboard-navbar__auth-button--login"
+								scroll={false}
+							>
+								Log in
+							</Link>
+							<Link
+								href="/signup"
+								className="nondashboard-navbar__auth-button--signup"
+								scroll={false}
+							>
+								Sign up
+							</Link>
+						</>
+					)}
 				</div>
 			</div>
 		</nav>

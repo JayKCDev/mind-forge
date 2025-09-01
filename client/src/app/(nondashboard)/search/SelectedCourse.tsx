@@ -3,18 +3,22 @@ import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
 import React from "react";
 import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@/hooks/useAuth";
 
 const SelectedCourse = ({ course, handleEnrollNow }: SelectedCourseProps) => {
 	let isCurrentUserEnrolled: boolean = false;
-	const { user } = useUser();
+	const { user } = useAuth();
 
 	if (course?.enrollments?.length) {
 		const enrolledStudents = course?.enrollments.map(
 			(enrollment) => enrollment.userId
 		);
 
-		if (user && enrolledStudents?.length && enrolledStudents?.includes(user.id))
+		if (
+			user &&
+			enrolledStudents?.length &&
+			enrolledStudents?.includes(user.userId)
+		)
 			isCurrentUserEnrolled = true;
 	}
 

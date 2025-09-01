@@ -41,7 +41,7 @@ const StripeProvider = ({ children }: { children: React.ReactNode }) => {
       const result = await createStripePaymentIntent({
         amount: course?.price ?? 9999999999999,
       }).unwrap();
-
+			console.log(result);
       setClientSecret(result.clientSecret);
     };
 

@@ -10,18 +10,18 @@ import {
   useDeleteCourseMutation,
   useGetCoursesQuery,
 } from "@/state/api";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
 
 const Courses = () => {
-  const router = useRouter();
-  const { user } = useUser();
-  const {
+	const router = useRouter();
+	const { user } = useAuth();
+	const {
 		data: courses,
 		isLoading,
 		isError,
-	} = useGetCoursesQuery({ category: "all", teacherId: user.id });
+	} = useGetCoursesQuery({ category: "all", teacherId: user?.userId || "" });
 
 	const [createCourse] = useCreateCourseMutation();
 	const [deleteCourse] = useDeleteCourseMutation();
@@ -58,8 +58,8 @@ const Courses = () => {
 		if (!user) return;
 
 		const result = await createCourse({
-			teacherId: user.id,
-			teacherName: user.fullName || "Larry Page",
+			teacherId: user.userId,
+			teacherName: `${user.firstName} ${user.lastName}`,
 		}).unwrap();
 		router.push(`/teacher/courses/${result.courseId}`, {
 			scroll: false,
@@ -69,37 +69,37 @@ const Courses = () => {
 	if (isLoading) return <Loading />;
 	if (isError || !courses) return <div>Error loading courses.</div>;
 
-  return (
-    <div className="teacher-courses">
-      <Header
-        title="Courses"
-        subtitle="Browse your courses"
-        rightElement={
-          <Button
-            onClick={handleCreateCourse}
-            className="teacher-courses__header"
-          >
-            Create Course
-          </Button>
-        }
-      />
-      <Toolbar
-        onSearch={setSearchTerm}
-        onCategoryChange={setSelectedCategory}
-      />
-      <div className="teacher-courses__grid">
-        {filteredCourses.map((course) => (
-          <TeacherCourseCard
-            key={course.courseId}
-            course={course}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            isOwner={course.teacherId === user?.id}
-          />
-        ))}
-      </div>
-    </div>
-  );
+	return (
+		<div className="teacher-courses">
+			<Header
+				title="Courses"
+				subtitle="Browse your courses"
+				rightElement={
+					<Button
+						onClick={handleCreateCourse}
+						className="teacher-courses__header"
+					>
+						Create Course
+					</Button>
+				}
+			/>
+			<Toolbar
+				onSearch={setSearchTerm}
+				onCategoryChange={setSelectedCategory}
+			/>
+			<div className="teacher-courses__grid">
+				{filteredCourses.map((course) => (
+					<TeacherCourseCard
+						key={course.courseId}
+						course={course}
+						onEdit={handleEdit}
+						onDelete={handleDelete}
+						isOwner={course.teacherId === user?.userId}
+					/>
+				))}
+			</div>
+		</div>
+	);
 };
 
 export default Courses;

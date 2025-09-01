@@ -1,59 +1,57 @@
-import { useClerk, useUser } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import React from "react";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
+	Sidebar,
+	SidebarContent,
+	SidebarFooter,
+	SidebarHeader,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	useSidebar,
 } from "@/components/ui/sidebar";
 import {
-  BookOpen,
-  Briefcase,
-  DollarSign,
-  LogOut,
-  PanelLeft,
-  Settings,
-  User,
+	BookOpen,
+	Briefcase,
+	DollarSign,
+	LogOut,
+	PanelLeft,
+	Settings,
+	User,
 } from "lucide-react";
 import Loading from "./Loading";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
 
 const AppSidebar = () => {
-  const { user, isLoaded } = useUser();
-  const { signOut } = useClerk();
-  const pathname = usePathname();
-  const { toggleSidebar } = useSidebar();
+	const { user, isLoading, logout } = useAuth();
+	const pathname = usePathname();
+	const { toggleSidebar } = useSidebar();
 
-  const navLinks = {
-    student: [
-      { icon: BookOpen, label: "Courses", href: "/user/courses" },
-      { icon: Briefcase, label: "Billing", href: "/user/billing" },
-      { icon: User, label: "Profile", href: "/user/profile" },
-      { icon: Settings, label: "Settings", href: "/user/settings" },
-    ],
-    teacher: [
-      { icon: BookOpen, label: "Courses", href: "/teacher/courses" },
-      { icon: DollarSign, label: "Billing", href: "/teacher/billing" },
-      { icon: User, label: "Profile", href: "/teacher/profile" },
-      { icon: Settings, label: "Settings", href: "/teacher/settings" },
-    ],
-  };
+	const navLinks = {
+		student: [
+			{ icon: BookOpen, label: "Courses", href: "/user/courses" },
+			{ icon: Briefcase, label: "Billing", href: "/user/billing" },
+			{ icon: User, label: "Profile", href: "/user/profile" },
+			{ icon: Settings, label: "Settings", href: "/user/settings" },
+		],
+		teacher: [
+			{ icon: BookOpen, label: "Courses", href: "/teacher/courses" },
+			{ icon: DollarSign, label: "Billing", href: "/teacher/billing" },
+			{ icon: User, label: "Profile", href: "/teacher/profile" },
+			{ icon: Settings, label: "Settings", href: "/teacher/settings" },
+		],
+	};
 
-  if (!isLoaded) return <Loading />;
-  if (!user) return <div>User not found</div>;
+	if (isLoading) return <Loading />;
+	if (!user) return <div>User not found</div>;
 
-  const userType =
-    (user.publicMetadata.userType as "student" | "teacher") || "student";
-  const currentNavLinks = navLinks[userType];
+	const userType = user.userType || "student";
+	const currentNavLinks = navLinks[userType];
 
-  return (
+	return (
 		<Sidebar
 			collapsible="icon"
 			style={{ height: "100vh" }}
@@ -132,10 +130,7 @@ const AppSidebar = () => {
 				<SidebarMenu>
 					<SidebarMenuItem>
 						<SidebarMenuButton asChild>
-							<button
-								onClick={() => signOut()}
-								className="app-sidebar__signout"
-							>
+							<button onClick={logout} className="app-sidebar__signout">
 								<LogOut className="mr-2 h-6 w-6" />
 								<span>Sign out</span>
 							</button>

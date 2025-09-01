@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { getAuth } from "@clerk/express";
 import UserCourseProgress from "../models/userCourseProgressModel";
 import Course from "../models/courseModel";
 import { calculateOverallProgress } from "../utils/utils";
@@ -10,11 +9,11 @@ export const getUserEnrolledCourses = async (
 	res: Response
 ): Promise<void> => {
 	const { userId } = req.params;
-	const auth = getAuth(req);
+	const authenticatedUserId = req.user?.userId;
 	// @ts-ignore
 	let courses = [];
 
-	if (!auth || auth.userId !== userId) {
+	if (!authenticatedUserId || authenticatedUserId !== userId) {
 		res.status(403).json({ message: "Access denied" });
 		return;
 	}
@@ -46,6 +45,12 @@ export const getUserCourseProgress = async (
 	res: Response
 ): Promise<void> => {
 	const { userId, courseId } = req.params;
+	const authenticatedUserId = req.user?.userId;
+
+	if (!authenticatedUserId || authenticatedUserId !== userId) {
+		res.status(403).json({ message: "Access denied" });
+		return;
+	}
 
 	try {
 		const progress = await UserCourseProgress.get({ userId, courseId });
@@ -71,7 +76,13 @@ export const updateUserCourseProgress = async (
 	res: Response
 ): Promise<void> => {
 	const { userId, courseId } = req.params;
+	const authenticatedUserId = req.user?.userId;
 	const progressData = req.body;
+
+	if (!authenticatedUserId || authenticatedUserId !== userId) {
+		res.status(403).json({ message: "Access denied" });
+		return;
+	}
 
 	try {
 		let progress = await UserCourseProgress.get({ userId, courseId });

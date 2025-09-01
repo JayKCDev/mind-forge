@@ -7,15 +7,11 @@ import morgan from "morgan";
 import * as dynamoose from "dynamoose";
 import serverless from "serverless-http";
 import seed from "./seed/seedDynamodb";
-import {
-  clerkMiddleware,
-  createClerkClient,
-  requireAuth,
-} from "@clerk/express";
+import { authenticateToken } from "./middleware/auth";
 
 /* ROUTE IMPORTS */
 import courseRoutes from "./routes/courseRoutes";
-import userClerkRoutes from "./routes/userClerkRoutes";
+import userRoutes from "./routes/userRoutes";
 import transactionRoutes from "./routes/transactionRoutes";
 import userCourseProgressRoutes from "./routes/userCourseProgressRoutes";
 
@@ -25,12 +21,8 @@ dotenv.config();
 const isProduction = process.env.NODE_ENV === "production";
 
 if (!isProduction) {
-  dynamoose.aws.ddb.local();
+	dynamoose.aws.ddb.local();
 }
-
-export const clerkClient = createClerkClient({
-  secretKey: process.env.CLERK_SECRET_KEY,
-});
 
 const app = express();
 app.use(express.json());
@@ -40,17 +32,19 @@ app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
-app.use(clerkMiddleware());
 
 /* ROUTES */
 app.get("/", (req, res) => {
-  res.send("Hello World");
+	res.send("Hello World");
 });
 
+// Custom authentication routes (no auth middleware required - handled in controller)
+app.use("/auth", userRoutes);
+
+// Protected routes using JWT authentication
 app.use("/courses", courseRoutes);
-app.use("/users/clerk", requireAuth(), userClerkRoutes);
-app.use("/transactions", requireAuth(), transactionRoutes);
-app.use("/users/course-progress", requireAuth(), userCourseProgressRoutes);
+app.use("/transactions", authenticateToken, transactionRoutes);
+app.use("/users/course-progress", authenticateToken, userCourseProgressRoutes);
 
 /* SERVER */
 const port = process.env.PORT || 5000;
