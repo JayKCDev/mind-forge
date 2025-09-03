@@ -2,6 +2,11 @@ import { Request, Response } from "express";
 import Course from "../models/courseModel";
 import AWS from "aws-sdk";
 import { v4 as uuidv4 } from "uuid";
+import {
+	isValidCategory,
+	isValidSubCategory,
+	isSubCategoryValidForCategory,
+} from "../utils/categories";
 
 const s3 = new AWS.S3();
 
@@ -63,13 +68,17 @@ export const createCourse = async (
 			teacherName,
 			title: "Untitled Course",
 			description: "",
-			category: "Uncategorized",
+			shortDescription: "",
+			category: "Development",
+			subCategory: "Web Development",
 			image: "",
 			price: 0,
 			level: "Beginner",
 			status: "Draft",
 			sections: [],
 			enrollments: [],
+			whatYoullLearn: [],
+			requirements: [],
 		});
 		await newCourse.save();
 
@@ -99,6 +108,37 @@ export const updateCourse = async (
 				.status(403)
 				.json({ message: "Not authorized to update this course " });
 			return;
+		}
+
+		// Validate category and sub-category
+		if (updateData.category || updateData.subCategory) {
+			const category = updateData.category || course.category;
+			const subCategory = updateData.subCategory || course.subCategory;
+
+			if (!isValidCategory(category)) {
+				res.status(400).json({
+					message: "Invalid category",
+					error:
+						"Category must be one of: Development, Business, Design, Marketing",
+				});
+				return;
+			}
+
+			if (!isValidSubCategory(subCategory)) {
+				res.status(400).json({
+					message: "Invalid sub-category",
+					error: "Sub-category is not valid",
+				});
+				return;
+			}
+
+			if (!isSubCategoryValidForCategory(category, subCategory)) {
+				res.status(400).json({
+					message: "Invalid category-subcategory combination",
+					error: `Sub-category "${subCategory}" does not belong to category "${category}"`,
+				});
+				return;
+			}
 		}
 
 		if (updateData.price) {

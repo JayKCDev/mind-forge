@@ -14,6 +14,19 @@ declare global {
 		notificationFrequency?: "immediate" | "daily" | "weekly";
 	}
 
+	interface SearchFilters {
+		ratings: string;
+		level: string[];
+		price: string[];
+	}
+
+	interface SearchState {
+		filters: SearchFilters;
+		sortBy: string;
+		view: "grid" | "list";
+		searchQuery: string;
+	}
+
 	interface User {
 		userId: string;
 		firstName?: string;
@@ -43,6 +56,7 @@ declare global {
 		description?: string;
 		shortDescription?: string;
 		category: string;
+		subCategory: string;
 		image?: string;
 		price?: number; // Stored in cents (e.g., 4999 for $49.99)
 		level: "Beginner" | "Intermediate" | "Advanced";
@@ -51,6 +65,12 @@ declare global {
 		enrollments?: Array<{
 			userId: string;
 		}>;
+		// Additional fields for enhanced course display
+		rating?: number; // Average rating (e.g., 4.7)
+		reviewCount?: number; // Number of reviews (e.g., 16855)
+		duration?: number; // Total duration in hours (e.g., 25.5)
+		lectureCount?: number; // Number of lectures (e.g., 225)
+		badges?: Array<"Premium" | "Bestseller" | "New" | "Hot">;
 	}
 
 	interface Transaction {
@@ -189,6 +209,7 @@ declare global {
 		content: string;
 		video?: string | File;
 		freePreview?: boolean;
+		preview?: boolean;
 		type: "Text" | "Quiz" | "Video";
 	}
 

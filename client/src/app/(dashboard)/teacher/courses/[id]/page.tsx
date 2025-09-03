@@ -4,17 +4,23 @@ import { CustomFormField } from "@/components/CustomFormField";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { courseSchema } from "@/lib/schemas";
 import {
-  centsToDollars,
-  createCourseFormData,
-  uploadAllVideos,
+	courseSchema,
+	CourseFormData,
+	CourseFormDataExplicit,
+} from "@/lib/schemas";
+import {
+	centsToDollars,
+	createCourseFormData,
+	uploadAllVideos,
+	courseCategories,
+	courseSubCategories,
 } from "@/lib/utils";
 import { openSectionModal, setSections } from "@/state";
 import {
-  useGetCourseQuery,
-  useUpdateCourseMutation,
-  useGetUploadVideoUrlMutation,
+	useGetCourseQuery,
+	useUpdateCourseMutation,
+	useGetUploadVideoUrlMutation,
 } from "@/state/api";
 import { useAppDispatch, useAppSelector } from "@/state/redux";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,27 +33,43 @@ import ChapterModal from "./ChapterModal";
 import SectionModal from "./SectionModal";
 
 const CourseEditor = () => {
-  const router = useRouter();
-  const params = useParams();
-  const id = params.id as string;
-  const { data: course, isLoading, refetch } = useGetCourseQuery(id);
-  const [updateCourse] = useUpdateCourseMutation();
-  const [getUploadVideoUrl] = useGetUploadVideoUrlMutation();
+	const router = useRouter();
+	const params = useParams();
+	const id = params.id as string;
+	const { data: course, isLoading, refetch } = useGetCourseQuery(id);
+	const [updateCourse] = useUpdateCourseMutation();
+	const [getUploadVideoUrl] = useGetUploadVideoUrlMutation();
 
-  const dispatch = useAppDispatch();
-  const { sections } = useAppSelector((state) => state.global.courseEditor);
+	const dispatch = useAppDispatch();
+	const { sections } = useAppSelector((state) => state.global.courseEditor);
 
-  const methods = useForm<CourseFormData>({
+	const methods = useForm<CourseFormDataExplicit>({
 		resolver: zodResolver(courseSchema),
 		defaultValues: {
 			courseTitle: "",
 			teacherName: "",
 			courseDescription: "",
 			courseCategory: "",
+			courseSubCategory: "",
 			coursePrice: "0",
 			courseStatus: false,
-		},
+		} as CourseFormDataExplicit,
 	});
+
+	// Watch the selected category to update sub-category options
+	const selectedCategory = methods.watch("courseCategory");
+
+	// Debug logging
+	console.log("Selected category:", selectedCategory);
+	console.log(
+		"Available sub-categories:",
+		selectedCategory
+			? courseSubCategories[
+					selectedCategory as keyof typeof courseSubCategories
+				]
+			: "No category selected",
+	);
+	console.log("All courseSubCategories:", courseSubCategories);
 
 	useEffect(() => {
 		if (course) {
@@ -56,19 +78,41 @@ const CourseEditor = () => {
 				teacherName: course.teacherName,
 				courseDescription: course.description,
 				courseCategory: course.category,
+				courseSubCategory: course.subCategory,
 				coursePrice: centsToDollars(course.price),
 				courseStatus: course.status === "Published",
-			});
+			} as CourseFormDataExplicit);
 			dispatch(setSections(course.sections || []));
 		}
 	}, [course, methods]); // eslint-disable-line react-hooks/exhaustive-deps
 
-	const onSubmit = async (data: CourseFormData) => {
+	// Clear sub-category when category changes
+	useEffect(() => {
+		if (selectedCategory) {
+			// Check if current sub-category is valid for the selected category
+			const validSubCategories =
+				courseSubCategories[
+					selectedCategory as keyof typeof courseSubCategories
+				];
+			const currentSubCategory = methods.getValues("courseSubCategory");
+
+			if (currentSubCategory && validSubCategories) {
+				const isValidSubCategory = validSubCategories.some(
+					(sub) => sub.value === currentSubCategory,
+				);
+				if (!isValidSubCategory) {
+					methods.setValue("courseSubCategory", "");
+				}
+			}
+		}
+	}, [selectedCategory, methods]);
+
+	const onSubmit = async (data: CourseFormDataExplicit) => {
 		try {
 			const updatedSections = await uploadAllVideos(
 				sections,
 				id,
-				getUploadVideoUrl
+				getUploadVideoUrl,
 			);
 
 			const formData = createCourseFormData(data, updatedSections);
@@ -161,16 +205,43 @@ const CourseEditor = () => {
 									label="Course Category"
 									type="select"
 									placeholder="Select category here"
-									options={[
-										{ value: "technology", label: "Technology" },
-										{ value: "science", label: "Science" },
-										{ value: "mathematics", label: "Mathematics" },
-										{
-											value: "Artificial Intelligence",
-											label: "Artificial Intelligence",
-										},
-									]}
+									options={[...courseCategories]}
 									initialValue={course?.category}
+								/>
+
+								{/* Debug: Show selected category */}
+								<div className="text-sm text-gray-400 mb-2">
+									Debug: Selected category = &quot;{selectedCategory}&quot;
+								</div>
+
+								<CustomFormField
+									name="courseSubCategory"
+									label="Course Sub-Category"
+									type="select"
+									placeholder={
+										selectedCategory
+											? "Select sub-category here"
+											: "Select a category first"
+									}
+									options={(() => {
+										const subCategories =
+											selectedCategory &&
+											courseSubCategories[
+												selectedCategory as keyof typeof courseSubCategories
+											]
+												? [
+														...courseSubCategories[
+															selectedCategory as keyof typeof courseSubCategories
+														],
+													]
+												: [];
+										console.log(
+											"Sub-category options being passed:",
+											subCategories,
+										);
+										return subCategories;
+									})()}
+									initialValue={course?.subCategory}
 								/>
 
 								<CustomFormField

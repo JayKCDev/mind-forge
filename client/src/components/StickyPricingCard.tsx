@@ -81,7 +81,7 @@ const StickyPricingCard: React.FC<StickyPricingCardProps> = ({
 				{/* Subscription Section */}
 				<div className="space-y-2 sm:space-y-3">
 					<h3 className="font-semibold text-white-50 text-sm sm:text-base">
-						Subscribe to Udemy&apos;s top courses
+						Subscribe to Mind Forge&apos;s top courses
 					</h3>
 					<p className="text-xs sm:text-sm text-customgreys-dirtyGrey">
 						Get this course, plus 26,000+ of our top-rated courses, with
@@ -189,7 +189,7 @@ const StickyPricingCard: React.FC<StickyPricingCardProps> = ({
 									{appliedCoupon} is applied
 								</p>
 								<p className="text-xs text-customgreys-dirtyGrey">
-									Udemy coupon
+									Mind Forge coupon
 								</p>
 							</div>
 							<Badge variant="secondary" className="text-xs">

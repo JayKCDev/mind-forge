@@ -35,147 +35,173 @@ const ChapterModal = () => {
       : undefined;
 
   const methods = useForm<ChapterFormData>({
-    resolver: zodResolver(chapterSchema),
-    defaultValues: {
-      title: "",
-      content: "",
-      video: "",
-    },
-  });
+		resolver: zodResolver(chapterSchema),
+		defaultValues: {
+			title: "",
+			content: "",
+			video: "",
+			preview: false,
+		},
+	});
 
-  useEffect(() => {
-    if (chapter) {
-      methods.reset({
-        title: chapter.title,
-        content: chapter.content,
-        video: chapter.video || "",
-      });
-    } else {
-      methods.reset({
-        title: "",
-        content: "",
-        video: "",
-      });
-    }
-  }, [chapter, methods]);
+	useEffect(() => {
+		if (chapter) {
+			methods.reset({
+				title: chapter.title,
+				content: chapter.content,
+				video: chapter.video || "",
+				preview: chapter.preview || false,
+			});
+		} else {
+			methods.reset({
+				title: "",
+				content: "",
+				video: "",
+				preview: false,
+			});
+		}
+	}, [chapter, methods]);
 
-  const onClose = () => {
-    dispatch(closeChapterModal());
-  };
+	const onClose = () => {
+		dispatch(closeChapterModal());
+	};
 
-  const onSubmit = (data: ChapterFormData) => {
-    if (selectedSectionIndex === null) return;
+	const onSubmit = (data: ChapterFormData) => {
+		if (selectedSectionIndex === null) return;
 
-    const newChapter: Chapter = {
-      chapterId: chapter?.chapterId || uuidv4(),
-      title: data.title,
-      content: data.content,
-      type: data.video ? "Video" : "Text",
-      video: data.video,
-    };
+		const newChapter: Chapter = {
+			chapterId: chapter?.chapterId || uuidv4(),
+			title: data.title,
+			content: data.content,
+			type: data.video ? "Video" : "Text",
+			video: data.video,
+			preview: data.preview || false,
+		};
 
-    if (selectedChapterIndex === null) {
-      dispatch(
-        addChapter({
-          sectionIndex: selectedSectionIndex,
-          chapter: newChapter,
-        })
-      );
-    } else {
-      dispatch(
-        editChapter({
-          sectionIndex: selectedSectionIndex,
-          chapterIndex: selectedChapterIndex,
-          chapter: newChapter,
-        })
-      );
-    }
+		if (selectedChapterIndex === null) {
+			dispatch(
+				addChapter({
+					sectionIndex: selectedSectionIndex,
+					chapter: newChapter,
+				}),
+			);
+		} else {
+			dispatch(
+				editChapter({
+					sectionIndex: selectedSectionIndex,
+					chapterIndex: selectedChapterIndex,
+					chapter: newChapter,
+				}),
+			);
+		}
 
-    toast.success(
-      `Chapter added/updated successfully but you need to save the course to apply the changes`
-    );
-    onClose();
-  };
+		toast.success(
+			`Chapter added/updated successfully but you need to save the course to apply the changes`,
+		);
+		onClose();
+	};
 
-  return (
-    <CustomModal isOpen={isChapterModalOpen} onClose={onClose}>
-      <div className="chapter-modal">
-        <div className="chapter-modal__header">
-          <h2 className="chapter-modal__title">Add/Edit Chapter</h2>
-          <button onClick={onClose} className="chapter-modal__close">
-            <X className="w-6 h-6" />
-          </button>
-        </div>
+	return (
+		<CustomModal isOpen={isChapterModalOpen} onClose={onClose}>
+			<div className="chapter-modal">
+				<div className="chapter-modal__header">
+					<h2 className="chapter-modal__title">Add/Edit Chapter</h2>
+					<button onClick={onClose} className="chapter-modal__close">
+						<X className="w-6 h-6" />
+					</button>
+				</div>
 
-        <Form {...methods}>
-          <form
-            onSubmit={methods.handleSubmit(onSubmit)}
-            className="chapter-modal__form"
-          >
-            <CustomFormField
-              name="title"
-              label="Chapter Title"
-              placeholder="Write chapter title here"
-            />
+				<Form {...methods}>
+					<form
+						onSubmit={methods.handleSubmit(onSubmit)}
+						className="chapter-modal__form"
+					>
+						<CustomFormField
+							name="title"
+							label="Chapter Title"
+							placeholder="Write chapter title here"
+						/>
 
-            <CustomFormField
-              name="content"
-              label="Chapter Content"
-              type="textarea"
-              placeholder="Write chapter content here"
-            />
+						<CustomFormField
+							name="content"
+							label="Chapter Content"
+							type="textarea"
+							placeholder="Write chapter content here"
+						/>
 
-            <FormField
-              control={methods.control}
-              name="video"
-              render={({ field: { onChange, value } }) => (
-                <FormItem>
-                  <FormLabel className="text-customgreys-dirtyGrey text-sm">
-                    Chapter Video
-                  </FormLabel>
-                  <FormControl>
-                    <div>
-                      <Input
-                        type="file"
-                        accept="video/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            onChange(file);
-                          }
-                        }}
-                        className="border-none bg-customgreys-darkGrey py-2 cursor-pointer"
-                      />
-                      {typeof value === "string" && value && (
-                        <div className="my-2 text-sm text-gray-600">
-                          Current video: {value.split("/").pop()}
-                        </div>
-                      )}
-                      {value instanceof File && (
-                        <div className="my-2 text-sm text-gray-600">
-                          Selected file: {value.name}
-                        </div>
-                      )}
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-red-400" />
-                </FormItem>
-              )}
-            />
+						<FormField
+							control={methods.control}
+							name="video"
+							render={({ field: { onChange, value } }) => (
+								<FormItem>
+									<FormLabel className="text-customgreys-dirtyGrey text-sm">
+										Chapter Video
+									</FormLabel>
+									<FormControl>
+										<div>
+											<Input
+												type="file"
+												accept="video/*"
+												onChange={(e) => {
+													const file = e.target.files?.[0];
+													if (file) {
+														onChange(file);
+													}
+												}}
+												className="border-none bg-customgreys-darkGrey py-2 cursor-pointer"
+											/>
+											{typeof value === "string" && value && (
+												<div className="my-2 text-sm text-gray-600">
+													Current video: {value.split("/").pop()}
+												</div>
+											)}
+											{value instanceof File && (
+												<div className="my-2 text-sm text-gray-600">
+													Selected file: {value.name}
+												</div>
+											)}
+										</div>
+									</FormControl>
+									<FormMessage className="text-red-400" />
+								</FormItem>
+							)}
+						/>
 
-            <div className="chapter-modal__actions">
-              <Button type="button" variant="outline" onClick={onClose}>
-                Cancel
-              </Button>
-              <Button type="submit" className="bg-primary-700">
-                Save
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </div>
-    </CustomModal>
-  );
+						<FormField
+							control={methods.control}
+							name="preview"
+							render={({ field: { onChange, value } }) => (
+								<FormItem className="flex flex-row items-start space-x-3 space-y-0">
+									<FormControl>
+										<input
+											type="checkbox"
+											checked={value || false}
+											onChange={(e) => onChange(e.target.checked)}
+											className="mt-1"
+										/>
+									</FormControl>
+									<div className="space-y-1 leading-none">
+										<FormLabel className="text-customgreys-dirtyGrey text-sm">
+											Make available for preview
+										</FormLabel>
+									</div>
+								</FormItem>
+							)}
+						/>
+
+						<div className="chapter-modal__actions">
+							<Button type="button" variant="outline" onClick={onClose}>
+								Cancel
+							</Button>
+							<Button type="submit" className="bg-primary-700">
+								Save
+							</Button>
+						</div>
+					</form>
+				</Form>
+			</div>
+		</CustomModal>
+	);
 };
 
 export default ChapterModal;

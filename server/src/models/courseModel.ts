@@ -20,48 +20,52 @@ const commentSchema = new Schema({
 });
 
 const chapterSchema = new Schema({
-  chapterId: {
-    type: String,
-    required: true,
-  },
-  type: {
-    type: String,
-    enum: ["Text", "Quiz", "Video"],
-    required: true,
-  },
-  title: {
-    type: String,
-    required: true,
-  },
-  content: {
-    type: String,
-    required: true,
-  },
-  comments: {
-    type: Array,
-    schema: [commentSchema],
-  },
-  video: {
-    type: String,
-  },
+	chapterId: {
+		type: String,
+		required: true,
+	},
+	type: {
+		type: String,
+		enum: ["Text", "Quiz", "Video"],
+		required: true,
+	},
+	title: {
+		type: String,
+		required: true,
+	},
+	content: {
+		type: String,
+		required: true,
+	},
+	comments: {
+		type: Array,
+		schema: [commentSchema],
+	},
+	video: {
+		type: String,
+	},
+	preview: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 const sectionSchema = new Schema({
-  sectionId: {
-    type: String,
-    required: true,
-  },
-  sectionTitle: {
-    type: String,
-    required: true,
-  },
-  sectionDescription: {
-    type: String,
-  },
-  chapters: {
-    type: Array,
-    schema: [chapterSchema],
-  },
+	sectionId: {
+		type: String,
+		required: true,
+	},
+	sectionTitle: {
+		type: String,
+		required: true,
+	},
+	sectionDescription: {
+		type: String,
+	},
+	chapters: {
+		type: Array,
+		schema: [chapterSchema],
+	},
 });
 
 const courseSchema = new Schema(
@@ -86,16 +90,20 @@ const courseSchema = new Schema(
 		description: {
 			type: String,
 			required: true,
-			validate: (value: any) =>
-				typeof value === "string" && value.length >= 50 && value.length <= 500,
+			// validate: (value: any) =>
+			// 	typeof value === "string" && value.length >= 50 && value.length <= 500,
 		},
 		shortDescription: {
 			type: String,
 			required: true,
-			validate: (value: any) =>
-				typeof value === "string" && value.length >= 10 && value.length <= 250,
+			// validate: (value: any) =>
+			// 	typeof value === "string" && value.length >= 10 && value.length <= 250,
 		},
 		category: {
+			type: String,
+			required: true,
+		},
+		subCategory: {
 			type: String,
 			required: true,
 		},
@@ -134,13 +142,13 @@ const courseSchema = new Schema(
 			type: Array,
 			schema: [String],
 			required: true,
-			validate: (value) => Array.isArray(value) && value.length > 0,
+			// validate: (value) => Array.isArray(value) && value.length > 0,
 		},
 		requirements: {
 			type: Array,
 			schema: [String],
 			required: true,
-			validate: (value) => Array.isArray(value) && value.length > 0,
+			// validate: (value) => Array.isArray(value) && value.length > 0,
 		},
 	},
 	{
