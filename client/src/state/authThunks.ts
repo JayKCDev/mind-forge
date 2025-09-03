@@ -3,6 +3,8 @@ import {
 	setCredentials,
 	logout,
 	setLoading,
+	setLoggingOut,
+	setRedirectingAfterLogout,
 	setError,
 	clearError,
 } from "./authSlice";
@@ -118,6 +120,10 @@ export const logoutUser = createAsyncThunk(
 	"auth/logout",
 	async (_, { dispatch, getState }) => {
 		try {
+			// Set logging out state to prevent flash of error message
+			dispatch(setLoggingOut(true));
+			dispatch(setRedirectingAfterLogout(true));
+
 			const state = getState() as RootState;
 			const token = state.auth.token || localStorage.getItem("authToken");
 
@@ -153,6 +159,8 @@ export const logoutUser = createAsyncThunk(
 			localStorage.removeItem("authToken");
 			dispatch(logout());
 		}
+		// Note: We don't reset isLoggingOut here to prevent the flash
+		// It will be reset when the component unmounts or redirects
 	},
 );
 

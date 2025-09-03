@@ -11,7 +11,11 @@ import SelectedCourse from "./SelectedCourse";
 const Search = () => {
 	const searchParams = useSearchParams();
 	const id = searchParams.get("id");
-	const { data: courses, isLoading, isError } = useGetCoursesQuery({});
+	const {
+		data: courses,
+		isLoading,
+		isError,
+	} = useGetCoursesQuery({ category: undefined, teacherId: "" });
 	const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 	const router = useRouter();
 
@@ -30,10 +34,8 @@ const Search = () => {
 	if (isError || !courses) return <div>Failed to fetch courses</div>;
 
 	const handleCourseSelect = (course: Course) => {
-		setSelectedCourse(course);
-		router.push(`/search?id=${course.courseId}`, {
-			scroll: false,
-		});
+		// Navigate to the course detail page
+		router.push(`/course/${course.courseId}`);
 	};
 
 	const handleEnrollNow = (courseId: string) => {

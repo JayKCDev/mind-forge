@@ -2,7 +2,7 @@
 
 import { Bell, BookOpen, User, LogOut } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
+import React from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
@@ -17,16 +17,31 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const Navbar = ({ isCoursePage }: { isCoursePage: boolean }) => {
+const Navbar: React.FC<NavbarProps> = ({ isCoursePage, className = "" }) => {
 	const { user, logout } = useAuth();
 	const userRole = user?.userType as "student" | "teacher";
 
+	const handleLogout = async () => {
+		try {
+			await logout();
+		} catch (error) {
+			console.error("Logout failed:", error);
+		}
+	};
+
 	return (
-		<nav className="dashboard-navbar">
+		<nav
+			className={`dashboard-navbar ${className}`}
+			role="navigation"
+			aria-label="Main navigation"
+		>
 			<div className="dashboard-navbar__container">
 				<div className="dashboard-navbar__search">
 					<div className="md:hidden">
-						<SidebarTrigger className="dashboard-navbar__sidebar-trigger" />
+						<SidebarTrigger
+							className="dashboard-navbar__sidebar-trigger"
+							aria-label="Toggle sidebar menu"
+						/>
 					</div>
 
 					<div className="flex items-center gap-4">
@@ -37,26 +52,49 @@ const Navbar = ({ isCoursePage }: { isCoursePage: boolean }) => {
 									"!bg-customgreys-secondarybg": isCoursePage,
 								})}
 								scroll={false}
+								aria-label="Search courses"
 							>
 								<span className="hidden sm:inline">Search Courses</span>
 								<span className="sm:hidden">Search</span>
 							</Link>
-							<BookOpen className="dashboard-navbar__search-icon" size={18} />
+							<BookOpen
+								className="dashboard-navbar__search-icon"
+								size={18}
+								aria-hidden="true"
+							/>
 						</div>
 					</div>
 				</div>
 
 				<div className="dashboard-navbar__actions">
-					<button className="nondashboard-navbar__notification-button">
-						<span className="nondashboard-navbar__notification-indicator"></span>
-						<Bell className="nondashboard-navbar__notification-icon" />
+					<button
+						className="nondashboard-navbar__notification-button"
+						aria-label="View notifications"
+						aria-describedby="notification-count"
+					>
+						<span
+							id="notification-count"
+							className="nondashboard-navbar__notification-indicator"
+							aria-label="0 new notifications"
+						></span>
+						<Bell
+							className="nondashboard-navbar__notification-icon"
+							aria-hidden="true"
+						/>
 					</button>
 
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
-							<Button variant="ghost" className="relative h-8 w-8 rounded-full">
+							<Button
+								variant="ghost"
+								className="relative h-8 w-8 rounded-full"
+								aria-label={`Open user menu for ${user?.firstName || "User"}`}
+							>
 								<Avatar className="h-8 w-8">
-									<AvatarImage src="" alt={user?.firstName || "User"} />
+									<AvatarImage
+										src=""
+										alt={`${user?.firstName || "User"}'s profile picture`}
+									/>
 									<AvatarFallback className="bg-customgreys-darkGrey text-white-100">
 										{user?.firstName?.[0] || "U"}
 									</AvatarFallback>
@@ -90,18 +128,20 @@ const Navbar = ({ isCoursePage }: { isCoursePage: boolean }) => {
 											: "/user/profile"
 									}
 									className="cursor-pointer"
+									aria-label="View profile"
 								>
-									<User className="mr-2 h-4 w-4" />
+									<User className="mr-2 h-4 w-4" aria-hidden="true" />
 									<span>Profile</span>
 								</Link>
 							</DropdownMenuItem>
 							<DropdownMenuSeparator className="bg-customgreys-darkGrey" />
 							<DropdownMenuItem
-								onClick={logout}
+								onClick={handleLogout}
 								className="cursor-pointer text-white-100 hover:bg-customgreys-secondarybg focus:bg-customgreys-secondarybg"
+								aria-label="Sign out of account"
 							>
-								<LogOut className="mr-2 h-4 w-4" />
-								<span>Log out</span>
+								<LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
+								<span>Logout</span>
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>

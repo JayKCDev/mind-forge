@@ -4,12 +4,21 @@
 		"teacherId": "user_7kFh92JkCpQw3N8M5L4xRzVtYs",
 		"teacherName": "John Doe",
 		"title": "Introduction to Programming",
-		"description": "Learn the basics of programming with this comprehensive course.",
+		"description": "Learn the basics of programming with this comprehensive course. Master fundamental concepts, syntax, and best practices across multiple programming languages. Build your first applications and develop problem-solving skills essential for any developer.",
+		"shortDescription": "Master programming fundamentals and build your first applications.",
 		"category": "Computer Science",
 		"image": "https://images.pexels.com/photos/546819/pexels-photo-546819.jpeg",
 		"price": 4999,
 		"level": "Beginner",
 		"status": "Published",
+		"whatYoullLearn": [
+			"Master fundamental programming concepts and syntax",
+			"Write clean, efficient code in multiple programming languages",
+			"Debug and troubleshoot common programming errors",
+			"Understand data structures and algorithms basics",
+			"Build your first interactive programs and applications"
+		],
+		"requirements": ["Basic programming knowledge", "Familiarity with Python"],
 		"enrollments": [
 			{ "userId": "user_2ntu96pUCljUV2T9W0AThzjacQB" },
 			{ "userId": "user_9xWp45MnKjL8vRt2Hs6BqDcEy" }
@@ -116,12 +125,21 @@
 		"teacherId": "user_4mNj68RtPvXw2Ky9Qc7HbSdAf",
 		"teacherName": "Alice Johnson",
 		"title": "Advanced Machine Learning",
-		"description": "Dive deep into machine learning algorithms and techniques.",
+		"description": "Dive deep into machine learning algorithms and techniques. Explore neural networks, deep learning, feature engineering, and model optimization. Learn to build and deploy production-ready ML models for real-world applications in computer vision and natural language processing.",
+		"shortDescription": "Master advanced ML algorithms and deploy production-ready models.",
 		"category": "Artificial Intelligence",
 		"image": "https://images.pexels.com/photos/943096/pexels-photo-943096.jpeg",
 		"price": 9999,
 		"level": "Advanced",
 		"status": "Published",
+		"whatYoullLearn": [
+			"Implement advanced ML algorithms like neural networks and deep learning",
+			"Master feature engineering and data preprocessing techniques",
+			"Build and deploy production-ready machine learning models",
+			"Optimize model performance using hyperparameter tuning",
+			"Apply ML to real-world problems in computer vision and NLP"
+		],
+		"requirements": ["Basic programming knowledge", "Familiarity with Python"],
 		"enrollments": [
 			{ "userId": "user_2ntu96pUCljUV2T9W0AThzjacQB" },
 			{ "userId": "user_5vBn23WsLkMp7Jh4Gt8FxYcRz" }
@@ -230,12 +248,21 @@
 		"teacherId": "user_7kFh92JkCpQw3N8M5L4xRzVtYs",
 		"teacherName": "John Doe",
 		"title": "Web Development Fundamentals",
-		"description": "Learn the basics of HTML, CSS, and JavaScript to build modern websites.",
+		"description": "Learn the basics of HTML, CSS, and JavaScript to build modern websites. Master responsive design, DOM manipulation, and modern web frameworks. Create interactive web applications and deploy them to production with best practices for performance and user experience.",
+		"shortDescription": "Build modern, responsive websites with HTML, CSS, and JavaScript.",
 		"category": "Web Development",
 		"image": "https://images.pexels.com/photos/1181298/pexels-photo-1181298.jpeg",
 		"price": 7999,
 		"level": "Beginner",
 		"status": "Published",
+		"whatYoullLearn": [
+			"Create responsive websites using HTML5 and CSS3",
+			"Master JavaScript fundamentals and DOM manipulation",
+			"Build interactive web applications with modern frameworks",
+			"Implement responsive design principles and mobile-first approach",
+			"Deploy websites to production using modern hosting platforms"
+		],
+		"requirements": ["Basic programming knowledge", "Familiarity with Python"],
 		"enrollments": [
 			{ "userId": "user_6tHm89QwNpKj3Fx5Vy2RdLcBs" },
 			{ "userId": "user_9xWp45MnKjL8vRt2Hs6BqDcEy" }
@@ -306,12 +333,21 @@
 		"teacherId": "user_3rTg67LmZnXc4Vb8Wd0JyUhEq",
 		"teacherName": "Michael Brown",
 		"title": "Data Science Fundamentals",
-		"description": "Learn the basics of data science, including statistics, data visualization, and machine learning.",
+		"description": "Learn the basics of data science, including statistics, data visualization, and machine learning. Master data preprocessing, statistical analysis, and predictive modeling using Python. Extract actionable insights from complex datasets and create compelling visualizations to communicate your findings effectively.",
+		"shortDescription": "Master data analysis, visualization, and machine learning with Python.",
 		"category": "Data Science",
 		"image": "https://images.pexels.com/photos/4491461/pexels-photo-4491461.jpeg",
 		"price": 8999,
 		"level": "Intermediate",
 		"status": "Published",
+		"whatYoullLearn": [
+			"Master statistical analysis and probability theory",
+			"Clean and preprocess data using Python and pandas",
+			"Create compelling data visualizations with matplotlib and seaborn",
+			"Build predictive models using scikit-learn and machine learning",
+			"Extract actionable insights from complex datasets"
+		],
+		"requirements": ["Basic programming knowledge", "Familiarity with Python"],
 		"enrollments": [
 			{ "userId": "user_6tHm89QwNpKj3Fx5Vy2RdLcBs" },
 			{ "userId": "user_9xWp45MnKjL8vRt2Hs6BqDcEy" }
@@ -346,12 +382,21 @@
 		"teacherId": "user_7kFh92JkCpQw3N8M5L4xRzVtYs",
 		"teacherName": "John Doe",
 		"title": "Mobile App Development with React Native",
-		"description": "Build cross-platform mobile apps using React Native and JavaScript.",
+		"description": "Build cross-platform mobile apps using React Native and JavaScript. Master component architecture, navigation, state management, and native device integration. Learn to create polished mobile applications and deploy them to both iOS App Store and Google Play Store with professional development practices.",
+		"shortDescription": "Create cross-platform mobile apps for iOS and Android with React Native.",
 		"category": "Mobile Development",
 		"image": "https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg",
 		"price": 12999,
 		"level": "Advanced",
 		"status": "Published",
+		"whatYoullLearn": [
+			"Build cross-platform mobile apps for iOS and Android",
+			"Master React Native components, navigation, and state management",
+			"Integrate native device features like camera, GPS, and push notifications",
+			"Implement advanced UI/UX patterns and animations",
+			"Deploy apps to App Store and Google Play Store"
+		],
+		"requirements": ["Basic programming knowledge", "Familiarity with Python"],
 		"enrollments": [{ "userId": "user_6tHm89QwNpKj3Fx5Vy2RdLcBs" }],
 		"sections": [
 			{

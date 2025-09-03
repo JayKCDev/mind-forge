@@ -85,7 +85,7 @@ const ClientTeacherProfileContent = () => {
 				</CardHeader>
 				<CardContent>
 					<Button onClick={logout} variant="destructive">
-						Sign Out
+						Logout
 					</Button>
 				</CardContent>
 			</Card>

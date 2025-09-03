@@ -25,12 +25,12 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 
-const AppSidebar = () => {
+const AppSidebar: React.FC = () => {
 	const { user, isLoading, logout } = useAuth();
 	const pathname = usePathname();
 	const { toggleSidebar } = useSidebar();
 
-	const navLinks = {
+	const navLinks: NavLinks = {
 		student: [
 			{ icon: BookOpen, label: "Courses", href: "/user/courses" },
 			{ icon: Briefcase, label: "Billing", href: "/user/billing" },
@@ -45,8 +45,16 @@ const AppSidebar = () => {
 		],
 	};
 
-	if (isLoading) return <Loading />;
-	if (!user) return <div>User not found</div>;
+	const handleLogout = async () => {
+		try {
+			await logout();
+		} catch (error) {
+			console.error("Logout failed:", error);
+		}
+	};
+
+	if (isLoading) return <Loading fullScreen />;
+	if (!user) return <div role="alert">User not found</div>;
 
 	const userType = user.userType || "student";
 	const currentNavLinks = navLinks[userType];
@@ -56,6 +64,8 @@ const AppSidebar = () => {
 			collapsible="icon"
 			style={{ height: "100vh" }}
 			className="bg-customgreys-primarybg border-none shadow-lg"
+			role="navigation"
+			aria-label="Main sidebar navigation"
 		>
 			<SidebarHeader>
 				<SidebarMenu className="app-sidebar__menu">
@@ -64,19 +74,23 @@ const AppSidebar = () => {
 							size="lg"
 							onClick={() => toggleSidebar()}
 							className="group hover:bg-customgreys-secondarybg"
+							aria-label="Toggle sidebar"
 						>
 							<div className="app-sidebar__logo-container group">
 								<div className="app-sidebar__logo-wrapper">
 									<Image
 										src="/logo.svg"
-										alt="logo"
+										alt="Mind Forge logo"
 										width={25}
 										height={20}
 										className="app-sidebar__logo"
 									/>
 									<p className="app-sidebar__title">Mind Forge</p>
 								</div>
-								<PanelLeft className="app-sidebar__collapse-icon" />
+								<PanelLeft
+									className="app-sidebar__collapse-icon"
+									aria-hidden="true"
+								/>
 							</div>
 						</SidebarMenuButton>
 					</SidebarMenuItem>
@@ -86,12 +100,14 @@ const AppSidebar = () => {
 				<SidebarMenu className="app-sidebar__nav-menu">
 					{currentNavLinks.map((link) => {
 						const isActive = pathname.startsWith(link.href);
+						const IconComponent = link.icon;
+
 						return (
 							<SidebarMenuItem
 								key={link.href}
 								className={cn(
 									"app-sidebar__nav-item",
-									isActive && "bg-gray-800"
+									isActive && "bg-gray-800",
 								)}
 							>
 								<SidebarMenuButton
@@ -99,28 +115,36 @@ const AppSidebar = () => {
 									size="lg"
 									className={cn(
 										"app-sidebar__nav-button",
-										!isActive && "text-customgreys-dirtyGrey"
+										!isActive && "text-customgreys-dirtyGrey",
 									)}
 								>
 									<Link
 										href={link.href}
 										className="app-sidebar__nav-link"
 										scroll={false}
+										aria-current={isActive ? "page" : undefined}
+										aria-label={`Navigate to ${link.label}`}
 									>
-										<link.icon
+										<IconComponent
 											className={isActive ? "text-white-50" : "text-gray-500"}
+											aria-hidden="true"
 										/>
 										<span
 											className={cn(
 												"app-sidebar__nav-text",
-												isActive ? "text-white-50" : "text-gray-500"
+												isActive ? "text-white-50" : "text-gray-500",
 											)}
 										>
 											{link.label}
 										</span>
 									</Link>
 								</SidebarMenuButton>
-								{isActive && <div className="app-sidebar__active-indicator" />}
+								{isActive && (
+									<div
+										className="app-sidebar__active-indicator"
+										aria-hidden="true"
+									/>
+								)}
 							</SidebarMenuItem>
 						);
 					})}
@@ -130,9 +154,13 @@ const AppSidebar = () => {
 				<SidebarMenu>
 					<SidebarMenuItem>
 						<SidebarMenuButton asChild>
-							<button onClick={logout} className="app-sidebar__signout">
-								<LogOut className="mr-2 h-6 w-6" />
-								<span>Sign out</span>
+							<button
+								onClick={handleLogout}
+								className="app-sidebar__signout"
+								aria-label="Logout from account"
+							>
+								<LogOut className="mr-2 h-6 w-6" aria-hidden="true" />
+								<span>Logout</span>
 							</button>
 						</SidebarMenuButton>
 					</SidebarMenuItem>

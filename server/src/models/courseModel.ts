@@ -65,66 +65,87 @@ const sectionSchema = new Schema({
 });
 
 const courseSchema = new Schema(
-  {
-    courseId: {
-      type: String,
-      hashKey: true,
-      required: true,
-    },
-    teacherId: {
-      type: String,
-      required: true,
-    },
-    teacherName: {
-      type: String,
-      required: true,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-    },
-    category: {
-      type: String,
-      required: true,
-    },
-    image: {
-      type: String,
-    },
-    price: {
-      type: Number,
-    },
-    level: {
-      type: String,
-      required: true,
-      enum: ["Beginner", "Intermediate", "Advanced"],
-    },
-    status: {
-      type: String,
-      required: true,
-      enum: ["Draft", "Published"],
-    },
-    sections: {
-      type: Array,
-      schema: [sectionSchema],
-    },
-    enrollments: {
-      type: Array,
-      schema: [
-        new Schema({
-          userId: {
-            type: String,
-            required: true,
-          },
-        }),
-      ],
-    },
-  },
-  {
-    timestamps: true,
-  }
+	{
+		courseId: {
+			type: String,
+			hashKey: true,
+			required: true,
+		},
+		teacherId: {
+			type: String,
+			required: true,
+		},
+		teacherName: {
+			type: String,
+			required: true,
+		},
+		title: {
+			type: String,
+			required: true,
+		},
+		description: {
+			type: String,
+			required: true,
+			validate: (value: any) =>
+				typeof value === "string" && value.length >= 50 && value.length <= 500,
+		},
+		shortDescription: {
+			type: String,
+			required: true,
+			validate: (value: any) =>
+				typeof value === "string" && value.length >= 10 && value.length <= 250,
+		},
+		category: {
+			type: String,
+			required: true,
+		},
+		image: {
+			type: String,
+		},
+		price: {
+			type: Number,
+		},
+		level: {
+			type: String,
+			required: true,
+			enum: ["Beginner", "Intermediate", "Advanced"],
+		},
+		status: {
+			type: String,
+			required: true,
+			enum: ["Draft", "Published"],
+		},
+		sections: {
+			type: Array,
+			schema: [sectionSchema],
+		},
+		enrollments: {
+			type: Array,
+			schema: [
+				new Schema({
+					userId: {
+						type: String,
+						required: true,
+					},
+				}),
+			],
+		},
+		whatYoullLearn: {
+			type: Array,
+			schema: [String],
+			required: true,
+			validate: (value) => Array.isArray(value) && value.length > 0,
+		},
+		requirements: {
+			type: Array,
+			schema: [String],
+			required: true,
+			validate: (value) => Array.isArray(value) && value.length > 0,
+		},
+	},
+	{
+		timestamps: true,
+	}
 );
 
 const Course = model("Course", courseSchema);

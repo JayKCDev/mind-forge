@@ -21,18 +21,18 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema, type SignupFormData } from "@/lib/schemas";
 import { useAppDispatch } from "@/state/redux";
 import { signupUser } from "@/state/authThunks";
+import PasswordInput from "@/components/ui/password-input";
 
-const SignUpComponent = () => {
+const SignUpComponent: React.FC = () => {
 	const searchParams = useSearchParams();
 	const router = useRouter();
 	const dispatch = useAppDispatch();
-	const [showPassword, setShowPassword] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
 	const isCheckoutPage = searchParams.get("showSignUp") !== null;
@@ -105,32 +105,48 @@ const SignUpComponent = () => {
 									htmlFor="firstName"
 									className="text-white-50 font-normal"
 								>
-									First name
+									First name <span className="text-red-400">*</span>
 								</Label>
 								<Input
 									id="firstName"
 									{...register("firstName")}
 									className="bg-customgreys-primarybg text-white-50 border-customgreys-darkerGrey focus:border-primary-600 focus:ring-primary-600"
 									placeholder="John"
+									aria-describedby={
+										errors.firstName ? "firstName-error" : undefined
+									}
+									aria-required="true"
 								/>
 								{errors.firstName && (
-									<p className="text-red-400 text-sm">
+									<p
+										id="firstName-error"
+										className="text-red-400 text-sm"
+										role="alert"
+									>
 										{errors.firstName.message}
 									</p>
 								)}
 							</div>
 							<div className="space-y-2">
 								<Label htmlFor="lastName" className="text-white-50 font-normal">
-									Last name
+									Last name <span className="text-red-400">*</span>
 								</Label>
 								<Input
 									id="lastName"
 									{...register("lastName")}
 									className="bg-customgreys-primarybg text-white-50 border-customgreys-darkerGrey focus:border-primary-600 focus:ring-primary-600"
 									placeholder="Doe"
+									aria-describedby={
+										errors.lastName ? "lastName-error" : undefined
+									}
+									aria-required="true"
 								/>
 								{errors.lastName && (
-									<p className="text-red-400 text-sm">
+									<p
+										id="lastName-error"
+										className="text-red-400 text-sm"
+										role="alert"
+									>
 										{errors.lastName.message}
 									</p>
 								)}
@@ -139,7 +155,7 @@ const SignUpComponent = () => {
 
 						<div className="space-y-2">
 							<Label htmlFor="email" className="text-white-50 font-normal">
-								Email
+								Email <span className="text-red-400">*</span>
 							</Label>
 							<Input
 								id="email"
@@ -147,48 +163,31 @@ const SignUpComponent = () => {
 								{...register("email")}
 								className="bg-customgreys-primarybg text-white-50 border-customgreys-darkerGrey focus:border-primary-600 focus:ring-primary-600"
 								placeholder="john.doe@example.com"
+								aria-describedby={errors.email ? "email-error" : undefined}
+								aria-required="true"
 							/>
 							{errors.email && (
-								<p className="text-red-400 text-sm">{errors.email.message}</p>
-							)}
-						</div>
-
-						<div className="space-y-2">
-							<Label htmlFor="password" className="text-white-50 font-normal">
-								Password
-							</Label>
-							<div className="relative">
-								<Input
-									id="password"
-									type={showPassword ? "text" : "password"}
-									{...register("password")}
-									className="bg-customgreys-primarybg text-white-50 border-customgreys-darkerGrey focus:border-primary-600 focus:ring-primary-600 pr-10"
-									placeholder="••••••••"
-								/>
-								<Button
-									type="button"
-									variant="ghost"
-									size="sm"
-									className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-									onClick={() => setShowPassword(!showPassword)}
+								<p
+									id="email-error"
+									className="text-red-400 text-sm"
+									role="alert"
 								>
-									{showPassword ? (
-										<EyeOff className="h-4 w-4 text-white-50" />
-									) : (
-										<Eye className="h-4 w-4 text-white-50" />
-									)}
-								</Button>
-							</div>
-							{errors.password && (
-								<p className="text-red-400 text-sm">
-									{errors.password.message}
+									{errors.email.message}
 								</p>
 							)}
 						</div>
 
+						<PasswordInput
+							id="password"
+							label="Password"
+							register={register("password")}
+							error={errors.password?.message}
+							required
+						/>
+
 						<div className="space-y-2">
 							<Label htmlFor="userType" className="text-white-50 font-normal">
-								I want to
+								I want to <span className="text-red-400">*</span>
 							</Label>
 							<Select
 								value={userType}
@@ -196,7 +195,13 @@ const SignUpComponent = () => {
 									setValue("userType", value as "student" | "teacher")
 								}
 							>
-								<SelectTrigger className="bg-customgreys-primarybg text-white-50 border-customgreys-darkerGrey focus:border-primary-600 focus:ring-primary-600">
+								<SelectTrigger
+									className="bg-customgreys-primarybg text-white-50 border-customgreys-darkerGrey focus:border-primary-600 focus:ring-primary-600"
+									aria-describedby={
+										errors.userType ? "userType-error" : undefined
+									}
+									aria-required="true"
+								>
 									<SelectValue placeholder="Select your role" />
 								</SelectTrigger>
 								<SelectContent className="bg-customgreys-primarybg border-customgreys-darkerGrey">
@@ -215,7 +220,11 @@ const SignUpComponent = () => {
 								</SelectContent>
 							</Select>
 							{errors.userType && (
-								<p className="text-red-400 text-sm">
+								<p
+									id="userType-error"
+									className="text-red-400 text-sm"
+									role="alert"
+								>
 									{errors.userType.message}
 								</p>
 							)}
@@ -225,11 +234,18 @@ const SignUpComponent = () => {
 							type="submit"
 							className="w-full bg-primary-700 text-white-100 hover:bg-primary-600 shadow-none"
 							disabled={isLoading}
+							aria-describedby={isLoading ? "loading-description" : undefined}
 						>
 							{isLoading ? (
 								<>
-									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+									<Loader2
+										className="mr-2 h-4 w-4 animate-spin"
+										aria-hidden="true"
+									/>
 									Creating account...
+									<span id="loading-description" className="sr-only">
+										Please wait while we create your account
+									</span>
 								</>
 							) : (
 								"Create account"
@@ -244,7 +260,7 @@ const SignUpComponent = () => {
 							Already have an account?{" "}
 							<a
 								href={signInUrl}
-								className="text-primary-750 hover:text-primary-600 font-medium"
+								className="text-primary-750 hover:text-primary-600 font-medium focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2 rounded"
 							>
 								Sign in
 							</a>
