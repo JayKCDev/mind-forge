@@ -368,6 +368,8 @@ export const createCourseFormData = (
 	formData.append("subCategory", data.courseSubCategory);
 	formData.append("price", data.coursePrice.toString());
 	formData.append("status", data.courseStatus ? "Published" : "Draft");
+	formData.append("whatYoullLearn", JSON.stringify(data.whatYoullLearn));
+	formData.append("requirements", JSON.stringify(data.requirements));
 
 	const sectionsWithVideos = sections.map((section) => ({
 		...section,
@@ -383,76 +385,106 @@ export const createCourseFormData = (
 };
 
 export const uploadAllVideos = async (
-  localSections: Section[],
-  courseId: string,
-  getUploadVideoUrl: any
+	localSections: Section[],
+	courseId: string,
+	getUploadVideoUrl: any,
 ) => {
-  const updatedSections = localSections.map((section) => ({
-    ...section,
-    chapters: section.chapters.map((chapter) => ({
-      ...chapter,
-    })),
-  }));
+	const updatedSections = localSections.map((section) => ({
+		...section,
+		chapters: section.chapters.map((chapter) => ({
+			...chapter,
+		})),
+	}));
 
-  for (let i = 0; i < updatedSections.length; i++) {
-    for (let j = 0; j < updatedSections[i].chapters.length; j++) {
-      const chapter = updatedSections[i].chapters[j];
-      if (chapter.video instanceof File && chapter.video.type === "video/mp4") {
-        try {
-          const updatedChapter = await uploadVideo(
-            chapter,
-            courseId,
-            updatedSections[i].sectionId,
-            getUploadVideoUrl
-          );
-          updatedSections[i].chapters[j] = updatedChapter;
-        } catch (error) {
-          console.error(
-            `Failed to upload video for chapter ${chapter.chapterId}:`,
-            error
-          );
-        }
-      }
-    }
-  }
+	for (let i = 0; i < updatedSections.length; i++) {
+		for (let j = 0; j < updatedSections[i].chapters.length; j++) {
+			const chapter = updatedSections[i].chapters[j];
+			if (chapter.video instanceof File && chapter.video.type === "video/mp4") {
+				try {
+					const updatedChapter = await uploadVideo(
+						chapter,
+						courseId,
+						updatedSections[i].sectionId,
+						getUploadVideoUrl,
+					);
+					updatedSections[i].chapters[j] = updatedChapter;
+				} catch (error) {
+					console.error(
+						`Failed to upload video for chapter ${chapter.chapterId}:`,
+						error,
+					);
+				}
+			}
+		}
+	}
 
-  return updatedSections;
+	return updatedSections;
 };
 
 async function uploadVideo(
-  chapter: Chapter,
-  courseId: string,
-  sectionId: string,
-  getUploadVideoUrl: any
+	chapter: Chapter,
+	courseId: string,
+	sectionId: string,
+	getUploadVideoUrl: any,
 ) {
-  const file = chapter.video as File;
+	const file = chapter.video as File;
 
-  try {
-    const { uploadUrl, videoUrl } = await getUploadVideoUrl({
-      courseId,
-      sectionId,
-      chapterId: chapter.chapterId,
-      fileName: file.name,
-      fileType: file.type,
-    }).unwrap();
+	try {
+		const { uploadUrl, videoUrl } = await getUploadVideoUrl({
+			courseId,
+			sectionId,
+			fileName: file.name,
+			fileType: file.type,
+		}).unwrap();
 
-    await fetch(uploadUrl, {
-      method: "PUT",
-      headers: {
-        "Content-Type": file.type,
-      },
-      body: file,
-    });
-    toast.success(
-      `Video uploaded successfully for chapter ${chapter.chapterId}`
-    );
+		await fetch(uploadUrl, {
+			method: "PUT",
+			headers: {
+				"Content-Type": file.type,
+			},
+			body: file,
+		});
+		toast.success(
+			`Video uploaded successfully for chapter ${chapter.chapterId}`,
+		);
 
-    return { ...chapter, video: videoUrl };
-  } catch (error) {
-    console.error(
-      `Failed to upload video for chapter ${chapter.chapterId}:`,
-      error
-    );
-    throw error;
-  }
+		return { ...chapter, video: videoUrl };
+	} catch (error) {
+		console.error(
+			`Failed to upload video for chapter ${chapter.chapterId}:`,
+			error,
+		);
+		throw error;
+	}
 }
+
+// Upload cover photo to S3 (used when saving course)
+export const uploadCoverPhotoToS3 = async (
+	file: File,
+	courseId: string,
+	getUploadCoverPhotoUrl: any,
+	existingImageUrl?: string,
+): Promise<string> => {
+	try {
+		const { uploadUrl, coverPhotoUrl } = await getUploadCoverPhotoUrl({
+			courseId,
+			fileName: file.name,
+			fileType: file.type,
+			existingImageUrl,
+		}).unwrap();
+
+		await fetch(uploadUrl, {
+			method: "PUT",
+			headers: {
+				"Content-Type": file.type,
+			},
+			body: file,
+		});
+
+		return coverPhotoUrl;
+	} catch (error) {
+		console.error("Failed to upload cover photo:", error);
+		throw error;
+	}
+};
+

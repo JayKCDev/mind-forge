@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-// Course Editor Schemas - Updated with subCategory
+// Course Editor Schemas - Updated with subCategory and new fields
 export const courseSchema = z.object({
 	courseTitle: z.string().min(1, "Title is required"),
 	teacherName: z.string().min(1, "Teacher Name is required"),
@@ -9,6 +9,12 @@ export const courseSchema = z.object({
 	courseSubCategory: z.string().min(1, "Sub-category is required"),
 	coursePrice: z.string(),
 	courseStatus: z.boolean(),
+	whatYoullLearn: z.array(z.string().min(1, "Learning outcome cannot be empty"))
+		.min(1, "At least one learning outcome is required")
+		.max(20, "Maximum 20 learning outcomes allowed"),
+	requirements: z.array(z.string().min(1, "Requirement cannot be empty"))
+		.min(1, "At least one requirement is required")
+		.max(15, "Maximum 15 requirements allowed"),
 });
 
 export type CourseFormData = z.infer<typeof courseSchema>;
@@ -22,6 +28,8 @@ export interface CourseFormDataExplicit {
 	courseSubCategory: string;
 	coursePrice: string;
 	courseStatus: boolean;
+	whatYoullLearn: string[];
+	requirements: string[];
 }
 
 // Chapter Schemas

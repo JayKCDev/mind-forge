@@ -10,6 +10,18 @@ const nextConfig: NextConfig = {
 				port: "",
 				pathname: "/**",
 			},
+			{
+				protocol: "https",
+				hostname: "your-cloudfront-domain.com",
+				port: "",
+				pathname: "/**",
+			},
+			{
+				protocol: "https",
+				hostname: "djxzldido9vou.cloudfront.net",
+				port: "",
+				pathname: "/**",
+			},
 		],
 	},
 	eslint: {

@@ -1,12 +1,13 @@
 import express from "express";
 import multer from "multer";
 import {
-  createCourse,
-  deleteCourse,
-  getCourse,
-  listCourses,
-  updateCourse,
-  getUploadVideoUrl,
+	createCourse,
+	deleteCourse,
+	getCourse,
+	listCourses,
+	updateCourse,
+	getUploadVideoUrl,
+	getUploadCoverPhotoUrl,
 } from "../controllers/courseController";
 import { authenticateToken } from "../middleware/auth";
 
@@ -25,10 +26,18 @@ router.put(
 );
 router.delete("/:courseId", authenticateToken, deleteCourse);
 
+// Course-level upload URLs
 router.post(
-	"/:courseId/sections/:sectionId/chapters/:chapterId/get-upload-url",
+	"/:courseId/get-cover-photo-upload-url",
+	authenticateToken,
+	getUploadCoverPhotoUrl
+);
+
+router.post(
+	"/:courseId/get-video-upload-url",
 	authenticateToken,
 	getUploadVideoUrl
 );
+
 
 export default router;

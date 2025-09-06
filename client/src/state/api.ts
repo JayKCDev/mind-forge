@@ -90,7 +90,7 @@ export const api = createApi({
 					params: { category, teacherId },
 				}),
 				providesTags: ["Courses"],
-			}
+			},
 		),
 
 		getCourse: build.query<Course, string>({
@@ -136,16 +136,31 @@ export const api = createApi({
 			{ uploadUrl: string; videoUrl: string },
 			{
 				courseId: string;
-				chapterId: string;
 				sectionId: string;
 				fileName: string;
 				fileType: string;
 			}
 		>({
-			query: ({ courseId, sectionId, chapterId, fileName, fileType }) => ({
-				url: `courses/${courseId}/sections/${sectionId}/chapters/${chapterId}/get-upload-url`,
+			query: ({ courseId, sectionId, fileName, fileType }) => ({
+				url: `courses/${courseId}/get-video-upload-url`,
 				method: "POST",
-				body: { fileName, fileType },
+				body: { fileName, fileType, courseId, sectionId },
+			}),
+		}),
+
+		getUploadCoverPhotoUrl: build.mutation<
+			{ uploadUrl: string; coverPhotoUrl: string },
+			{
+				courseId: string;
+				fileName: string;
+				fileType: string;
+				existingImageUrl?: string;
+			}
+		>({
+			query: ({ courseId, fileName, fileType, existingImageUrl }) => ({
+				url: `courses/${courseId}/get-cover-photo-upload-url`,
+				method: "POST",
+				body: { fileName, fileType, courseId, existingImageUrl },
 			}),
 		}),
 
@@ -212,7 +227,7 @@ export const api = createApi({
 			invalidatesTags: ["UserCourseProgress"],
 			async onQueryStarted(
 				{ userId, courseId, progressData },
-				{ dispatch, queryFulfilled }
+				{ dispatch, queryFulfilled },
 			) {
 				const patchResult = dispatch(
 					api.util.updateQueryData(
@@ -223,8 +238,8 @@ export const api = createApi({
 								...draft,
 								sections: progressData.sections,
 							});
-						}
-					)
+						},
+					),
 				);
 				try {
 					await queryFulfilled;
@@ -244,6 +259,7 @@ export const {
 	useGetCoursesQuery,
 	useGetCourseQuery,
 	useGetUploadVideoUrlMutation,
+	useGetUploadCoverPhotoUrlMutation,
 	useGetTransactionsQuery,
 	useCreateTransactionMutation,
 	useCreateStripePaymentIntentMutation,

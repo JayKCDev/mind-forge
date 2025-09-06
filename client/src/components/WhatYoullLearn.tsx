@@ -8,14 +8,10 @@ type WhatYoullLearnProps = {
 };
 
 const WhatYoullLearn: React.FC<WhatYoullLearnProps> = ({ course }) => {
-	// Generate learning objectives based on course sections and chapters
-	const learningObjectives = course.sections
-		.flatMap((section, sectionIndex) =>
-			section.chapters.map(
-				(chapter, chapterIndex) => `${section.sectionTitle}: ${chapter.title}`,
-			),
-		)
-		.slice(0, 10); // Limit to first 10 objectives
+	// Don't render if no learning objectives available
+	if (!course.whatYoullLearn || course.whatYoullLearn.length === 0) {
+		return null;
+	}
 
 	return (
 		<div className="space-y-3 sm:space-y-4">
@@ -23,7 +19,7 @@ const WhatYoullLearn: React.FC<WhatYoullLearnProps> = ({ course }) => {
 				What you&apos;ll learn
 			</h2>
 			<div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-				{learningObjectives.map((objective, index) => (
+				{course.whatYoullLearn.map((objective, index) => (
 					<div key={index} className="flex items-start gap-2 sm:gap-3">
 						<Check className="w-4 h-4 sm:w-5 sm:h-5 text-primary-600 flex-shrink-0 mt-0.5" />
 						<span className="text-xs sm:text-sm text-customgreys-dirtyGrey leading-relaxed">

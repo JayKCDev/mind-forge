@@ -62,6 +62,8 @@ declare global {
 		level: "Beginner" | "Intermediate" | "Advanced";
 		status: "Draft" | "Published";
 		sections: Section[];
+		whatYoullLearn?: string[]; // Array of learning outcomes
+		requirements?: string[]; // Array of course requirements
 		enrollments?: Array<{
 			userId: string;
 		}>;

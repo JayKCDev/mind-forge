@@ -50,47 +50,48 @@ export const getContentType = (filename: string) => {
 
 // Preserved HLS/DASH upload logic for future use
 export const handleAdvancedVideoUpload = async (
-  s3: any,
-  files: any,
-  uniqueId: string,
-  bucketName: string
+	s3: any,
+	files: any,
+	courseId: string,
+	sectionId: string,
+	bucketName: string
 ) => {
-  const isHLSOrDASH = files.some(
-    (file: any) =>
-      file.originalname.endsWith(".m3u8") || file.originalname.endsWith(".mpd")
-  );
+	const isHLSOrDASH = files.some(
+		(file: any) =>
+			file.originalname.endsWith(".m3u8") || file.originalname.endsWith(".mpd")
+	);
 
-  if (isHLSOrDASH) {
-    // Handle HLS/MPEG-DASH Upload
-    const uploadPromises = files.map((file: any) => {
-      const s3Key = `videos/${uniqueId}/${file.originalname}`;
-      return s3
-        .upload({
-          Bucket: bucketName,
-          Key: s3Key,
-          Body: file.buffer,
-          ContentType: getContentType(file.originalname),
-        })
-        .promise();
-    });
-    await Promise.all(uploadPromises);
+	if (isHLSOrDASH) {
+		// Handle HLS/MPEG-DASH Upload
+		const uploadPromises = files.map((file: any) => {
+			const s3Key = `videos/${courseId}/${sectionId}/${file.originalname}`;
+			return s3
+				.upload({
+					Bucket: bucketName,
+					Key: s3Key,
+					Body: file.buffer,
+					ContentType: getContentType(file.originalname),
+				})
+				.promise();
+		});
+		await Promise.all(uploadPromises);
 
-    // Determine manifest file URL
-    const manifestFile = files.find(
-      (file: any) =>
-        file.originalname.endsWith(".m3u8") ||
-        file.originalname.endsWith(".mpd")
-    );
-    const manifestFileName = manifestFile?.originalname || "";
-    const videoType = manifestFileName.endsWith(".m3u8") ? "hls" : "dash";
+		// Determine manifest file URL
+		const manifestFile = files.find(
+			(file: any) =>
+				file.originalname.endsWith(".m3u8") ||
+				file.originalname.endsWith(".mpd")
+		);
+		const manifestFileName = manifestFile?.originalname || "";
+		const videoType = manifestFileName.endsWith(".m3u8") ? "hls" : "dash";
 
-    return {
-      videoUrl: `${process.env.CLOUDFRONT_DOMAIN}/videos/${uniqueId}/${manifestFileName}`,
-      videoType,
-    };
-  }
+		return {
+			videoUrl: `${process.env.CLOUDFRONT_DOMAIN}/videos/${courseId}/${sectionId}/${manifestFileName}`,
+			videoType,
+		};
+	}
 
-  return null; // Return null if not HLS/DASH to handle regular upload
+	return null; // Return null if not HLS/DASH to handle regular upload
 };
 
 export const mergeSections = (

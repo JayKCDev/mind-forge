@@ -46,16 +46,14 @@ const CourseDetailPage = () => {
 			<div className="bg-customgreys-secondarybg border-b border-customgreys-darkerGrey">
 				<div className="px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-3">
 					<nav className="text-xs sm:text-sm">
-						<span className="text-customgreys-dirtyGrey">Development</span>
-						<span className="mx-1 sm:mx-2 text-customgreys-dirtyGrey">
-							&gt;
+						<span className="text-customgreys-dirtyGrey">
+							{courseData.category}
 						</span>
-						<span className="text-customgreys-dirtyGrey">Data Science</span>
 						<span className="mx-1 sm:mx-2 text-customgreys-dirtyGrey">
 							&gt;
 						</span>
 						<span className="text-customgreys-dirtyGrey">
-							Large Language Models (LLM)
+							{courseData.subCategory}
 						</span>
 					</nav>
 				</div>

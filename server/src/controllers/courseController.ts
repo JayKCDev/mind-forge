@@ -153,6 +153,16 @@ export const updateCourse = async (
 			updateData.price = price * 100;
 		}
 
+		// Validate cover photo requirement for publishing
+		if (updateData.status === "Published" && !course.image) {
+			res.status(400).json({
+				message: "Cover photo is required to publish a course",
+				error: "COVER_PHOTO_REQUIRED",
+			});
+			return;
+		}
+
+		// Parse JSON string fields
 		if (updateData.sections) {
 			const sectionsData =
 				typeof updateData.sections === "string"
@@ -167,6 +177,22 @@ export const updateCourse = async (
 					chapterId: chapter.chapterId || uuidv4(),
 				})),
 			}));
+		}
+
+		// Parse whatYoullLearn array from JSON string
+		if (updateData.whatYoullLearn) {
+			updateData.whatYoullLearn =
+				typeof updateData.whatYoullLearn === "string"
+					? JSON.parse(updateData.whatYoullLearn)
+					: updateData.whatYoullLearn;
+		}
+
+		// Parse requirements array from JSON string
+		if (updateData.requirements) {
+			updateData.requirements =
+				typeof updateData.requirements === "string"
+					? JSON.parse(updateData.requirements)
+					: updateData.requirements;
 		}
 
 		Object.assign(course, updateData);
@@ -208,35 +234,93 @@ export const deleteCourse = async (
 };
 
 export const getUploadVideoUrl = async (
-  req: Request,
-  res: Response
+	req: Request,
+	res: Response
 ): Promise<void> => {
-  const { fileName, fileType } = req.body;
+	const { fileName, fileType, courseId, sectionId } = req.body;
 
-  if (!fileName || !fileType) {
-    res.status(400).json({ message: "File name and type are required" });
-    return;
-  }
+	if (!fileName || !fileType || !courseId || !sectionId) {
+		res.status(400).json({
+			message: "File name, type, course ID, and section ID are required",
+		});
+		return;
+	}
 
-  try {
-    const uniqueId = uuidv4();
-    const s3Key = `videos/${uniqueId}/${fileName}`;
+	try {
+		const s3Key = `videos/${courseId}/${sectionId}/${fileName}`;
 
-    const s3Params = {
-      Bucket: process.env.S3_BUCKET_NAME || "",
-      Key: s3Key,
-      Expires: 60,
-      ContentType: fileType,
-    };
+		const s3Params = {
+			Bucket: process.env.S3_BUCKET_NAME || "",
+			Key: s3Key,
+			Expires: 60,
+			ContentType: fileType,
+		};
 
-    const uploadUrl = s3.getSignedUrl("putObject", s3Params);
-    const videoUrl = `${process.env.CLOUDFRONT_DOMAIN}/videos/${uniqueId}/${fileName}`;
+		const uploadUrl = s3.getSignedUrl("putObject", s3Params);
+		const videoUrl = `${process.env.CLOUDFRONT_DOMAIN}/videos/${courseId}/${sectionId}/${fileName}`;
 
-    res.json({
-      message: "Upload URL generated successfully",
-      data: { uploadUrl, videoUrl },
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Error generating upload URL", error });
-  }
+		res.json({
+			message: "Upload URL generated successfully",
+			data: { uploadUrl, videoUrl },
+		});
+	} catch (error) {
+		res.status(500).json({ message: "Error generating upload URL", error });
+	}
+};
+
+export const getUploadCoverPhotoUrl = async (
+	req: Request,
+	res: Response
+): Promise<void> => {
+	const { fileName, fileType, courseId, existingImageUrl } = req.body;
+
+	if (!fileName || !fileType || !courseId) {
+		res.status(400).json({
+			message: "File name, type, and course ID are required",
+		});
+		return;
+	}
+
+	try {
+		// Delete existing cover photo if provided
+		if (existingImageUrl && existingImageUrl !== "/placeholder.png") {
+			try {
+				const urlParts = existingImageUrl.split("/");
+				const existingFileName = urlParts[urlParts.length - 1];
+				const existingS3Key = `covers/${courseId}/${existingFileName}`;
+
+				await s3
+					.deleteObject({
+						Bucket: process.env.S3_BUCKET_NAME || "",
+						Key: existingS3Key,
+					})
+					.promise();
+			} catch (deleteError) {
+				console.warn("Failed to delete existing cover photo:", deleteError);
+				// Continue with upload even if delete fails
+			}
+		}
+
+		// Generate upload URL for new cover photo
+		const s3Key = `covers/${courseId}/${fileName}`;
+
+		const s3Params = {
+			Bucket: process.env.S3_BUCKET_NAME || "",
+			Key: s3Key,
+			Expires: 60,
+			ContentType: fileType,
+		};
+
+		const uploadUrl = s3.getSignedUrl("putObject", s3Params);
+		const coverPhotoUrl = `${process.env.CLOUDFRONT_DOMAIN}/covers/${courseId}/${fileName}`;
+
+		res.json({
+			message: "Cover photo upload URL generated successfully",
+			data: { uploadUrl, coverPhotoUrl },
+		});
+	} catch (error) {
+		res
+			.status(500)
+			.json({ message: "Error generating cover photo upload URL", error });
+	}
 };
